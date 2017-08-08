@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.geo.geo_test">
+
+    <uses-sdk
+        android:minSdkVersion="10"
+        android:targetSdkVersion="19" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
+    <uses-feature
+        android:name="android.hardware.bluetooth_le"
+        android:required="true" />
+
+
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- ****** START: GeoMoby Activities ******* -->
+        <service
+            android:name="com.geomoby.services.GeomobyService"
+            android:enabled="true"
+            android:exported="true"
+            android:launchMode="singleTop" />
+
+        <service android:name="com.geomoby.managers.GeomobyBeaconManager" />
+        <receiver android:name="com.geomoby.managers.GeomobyGPSManager" />
+        <receiver
+            android:name="com.geomoby.managers.GeomobyBootManager"
+            android:enabled="true"
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
+        <!-- ****** END: GeoMoby Activities ******* -->
+
+        <receiver
+            android:name=".CallBacksReceiver"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="GeomobyEventEnter" />
+                <action android:name="GeomobyEventDwell" />
+                <action android:name="GeomobyEventExit" />
+                <action android:name="GeomobyActionData" />
+                <action android:name="GeomobyActionBasic" />
+            </intent-filter>
+        </receiver>
+    </application>
+
+</manifest>
