@@ -14,6 +14,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.widget.TextView;
 
 import com.geomoby.GeoMoby;
@@ -31,7 +35,6 @@ import java.util.TimerTask;
 
 public class MainActivity extends Activity {
 
-    GeoMoby mGeoMoby;
     TextView initLoc;
     TextView curLoc;
     TextView repInt;
@@ -59,6 +62,12 @@ public class MainActivity extends Activity {
             }
         }
     };
+    final GestureDetector gestureDetector = new GestureDetector(new GestureDetector.SimpleOnGestureListener() {
+        public void onLongPress(MotionEvent e) {
+            MainActivity.this.openOptionsMenu();
+        }
+    });
+
     private static final int MY_PERMISSION_RESPONSE = 42;
 
 
@@ -244,6 +253,60 @@ public class MainActivity extends Activity {
     }
 
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        menu.add(0, 1, 0, "Tags(female, 25, gold)");
+        menu.add(0, 2, 0, "Tags(male, 27, silver)");
+        menu.add(0, 3, 0, "Tags(female, 22, bronze)");
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        Map<String, String> tags = new HashMap<>();
+
+        switch (item.getItemId()){
+            case 1:
+                tags.put("gender", "female");
+                tags.put("age", "25");
+                tags.put("membership", "gold");
+                Log.d("MainActivity", "Tags changed to - female, 25, gold");
+                break;
+            case 2:
+                tags.put("gender", "male");
+                tags.put("age", "27");
+                tags.put("membership", "silver");
+                Log.d("MainActivity", "Tags changed to - male, 27, silver");
+                break;
+            case 3:
+                tags.put("gender", "female");
+                tags.put("age", "22");
+                tags.put("membership", "bronze");
+                Log.d("MainActivity", "Tags changed to - female, 22, bronze");
+                break;
+        }
+
+        GeoMoby.getInstance().setTags(tags);
+
+        return super.onOptionsItemSelected(item);
+    }
+
+
+
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        gestureDetector.onTouchEvent(event);
+        return super.dispatchTouchEvent(event);
+    }
+
+
 
 
     void startGeomoby(){
@@ -252,15 +315,18 @@ public class MainActivity extends Activity {
         tags.put("age", "25");
         tags.put("membership", "gold");
 
-        mGeoMoby = new GeoMoby.Builder(getApplicationContext(), "XXXXXXXX", mServiceCallback)
+        // Build geomoby. build() method returns Geomoby object
+        new GeoMoby.Builder(getApplicationContext(), "XXXXXXXX", mServiceCallback)
                 .setDevMode(true)
                 .setUUID("xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx")
                 .setSilenceWindow(23,5)
                 .setTags(tags)
+                .setForeground("GEO Test", "This notification shows that application is working", R.mipmap.ic_launcher)
+                .forceForeground(true)
                 .build();
 
-        mGeoMoby.start();
-
+        // Start geomoby
+        GeoMoby.getInstance().start();
 
         Location initLocation = GeomobyDataManager.getInstance().getInitLocation();
         Location currentLocation = GeomobyDataManager.getInstance().getCurrentLocation();

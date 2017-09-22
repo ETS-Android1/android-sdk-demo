@@ -45,6 +45,13 @@ public class CallBacksReceiver extends BroadcastReceiver {
                 //sendNotification(context, NotificationID.getID(), "Exited", "Exited location - " + name, R.mipmap.exit);
                 break;
 
+            case GeoMoby.GeomobyEventCross:
+                name = intent.getExtras().getString(GeoMoby.GeomobyLocationName);
+                // It is not unusual to receive multiple event notifications as the GeoMoby SDK adjusts itself to the environmental variables
+                // Please use for DEBUG only
+                //sendNotification(context, NotificationID.getID(), "Crossed", "Crossed location - " + name, R.mipmap.exit);
+                break;
+
             case GeoMoby.GeomobyActionData:
                 GeomobyActionData geomobyActionData = (GeomobyActionData)intent.getSerializableExtra(GeoMoby.GeomobyActionDataContent);
                 if (geomobyActionData != null) {
