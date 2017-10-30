@@ -1,0 +1,62 @@
+{
+  "project_info": {
+    "project_number": "46228181053",
+    "firebase_url": "https://geotest-a7e62.firebaseio.com",
+    "project_id": "geotest-a7e62",
+    "storage_bucket": "geotest-a7e62.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:46228181053:android:8f4b9672c19de508",
+        "android_client_info": {
+          "package_name": "com.geo.geo_test"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "46228181053-p2bo4vebvebivptsa53i3dr5ofibj5dd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.geo.geo_test",
+            "certificate_hash": "77718a17633d5089b9198f2c123ecf319ad72e2b"
+          }
+        },
+        {
+          "client_id": "46228181053-vk7tqr3j04058f15191dbsugire7h78j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBXyLlMKwJ3yOkix5jbpdKtRdzhmK_-zU0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "46228181053-vk7tqr3j04058f15191dbsugire7h78j.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "46228181053-h8672gqokb42k414k98arelotk97pgkh.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "P3J7HDD4K6.com.geomoby.geotest"
+              }
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

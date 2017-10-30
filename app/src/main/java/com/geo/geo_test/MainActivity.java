@@ -26,6 +26,7 @@ import com.geomoby.classes.GeomobyError;
 import com.geomoby.managers.GeomobyDataManager;
 import com.geomoby.managers.GeomobyGPSManager;
 import com.geomoby.services.GeomobyService;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -89,8 +90,14 @@ public class MainActivity extends Activity {
             else if(action.equals(GeomobyGPSManager.NEW_CURRENT_LOCATION)){
                 Location initLocation = GeomobyDataManager.getInstance().getInitLocation();
                 Location currentLocation = GeomobyDataManager.getInstance().getCurrentLocation();
-                float distance = currentLocation.distanceTo(initLocation);
-                curLoc.setText("" + currentLocation.getLatitude() + ", " + currentLocation.getLongitude() + "; Distance to init = " + distance + "m");
+
+                if (currentLocation != null) {
+                    float distance = 0.0f;
+                    if (initLocation != null) {
+                        distance = currentLocation.distanceTo(initLocation);
+                    }
+                    curLoc.setText("" + currentLocation.getLatitude() + ", " + currentLocation.getLongitude() + "; Distance to init = " + distance + "m");
+                }
             }
 
             // Distance
@@ -190,6 +197,10 @@ public class MainActivity extends Activity {
         filter.addAction(GeomobyService.REPORT_SENT);
         filter.addAction(GeomobyService.BEACON_SCAN);
         registerReceiver(intentReceiver, filter);
+
+
+        // Firebase: subsribe to topic
+        FirebaseMessaging.getInstance().subscribeToTopic("GeomobySync");
 
 
         //Request permission if Android >= 6.0
@@ -292,7 +303,7 @@ public class MainActivity extends Activity {
                 break;
         }
 
-        GeoMoby.getInstance().setTags(tags);
+        GeoMoby.setTags(tags);
 
         return super.onOptionsItemSelected(item);
     }
@@ -316,9 +327,9 @@ public class MainActivity extends Activity {
         tags.put("membership", "gold");
 
         // Build geomoby. build() method returns Geomoby object
-        new GeoMoby.Builder(getApplicationContext(), "XXXXXXXX", mServiceCallback)
+        new GeoMoby.Builder(getApplicationContext(), "ATPRBM2R", mServiceCallback)
                 .setDevMode(true)
-                .setUUID("xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx")
+                .setUUID("f7826da6-4fa2-4e98-8024-bc5b71e0893e")
                 .setSilenceWindow(23,5)
                 .setTags(tags)
                 .setForeground("GEO Test", "This notification shows that application is working", R.mipmap.ic_launcher)
@@ -326,7 +337,7 @@ public class MainActivity extends Activity {
                 .build();
 
         // Start geomoby
-        GeoMoby.getInstance().start();
+        GeoMoby.start();
 
         Location initLocation = GeomobyDataManager.getInstance().getInitLocation();
         Location currentLocation = GeomobyDataManager.getInstance().getCurrentLocation();
