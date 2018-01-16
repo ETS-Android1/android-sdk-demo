@@ -208,21 +208,7 @@ public class MainActivity extends Activity {
         {
             if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 Log.d("MainActivity", "Location access not granted!");
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                builder.setTitle("Permission needed")
-                        .setMessage("Plese allow app to use Location")
-                        .setCancelable(false)
-                        .setNegativeButton("Ok",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-                                            MainActivity.this.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSION_RESPONSE);
-                                        }
-                                    }
-                                });
-                AlertDialog alert = builder.create();
-                alert.show();
+                MainActivity.this.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSION_RESPONSE);
             }
             else{
                 startGeomoby();
