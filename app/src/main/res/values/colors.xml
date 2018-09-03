@@ -3,4 +3,21 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
+    <color name="colorGradientStart">#00B2C3</color>
+    <color name="colorGradientEnd">#00D9E3</color>
+    <color name="colorBeaconBackground">#FFFFFF</color>
+
+    <color name="colorMainBeaconText">#3A3A3A</color>
+    <color name="colorMainInfoText">#ffffff</color>
+    <color name="colorMainProgress">#44000000</color>
+
+    <color name="colorDiscountNavigationBackground">#11000000</color>
+    <color name="colorDiscountText">#FFFFFF</color>
+    <color name="colorDiscountImageBackground">#13515E</color>
+
+    <color name="colorSettingsNavigationBackground">#00D9E3</color>
+    <color name="colorSettingsNavigationText">#FFFFFF</color>
+    <color name="colorSettingsButtonDark">#00d9e3</color>
+    <color name="colorSettingsButtonLight">#FFFFFF</color>
 </resources>

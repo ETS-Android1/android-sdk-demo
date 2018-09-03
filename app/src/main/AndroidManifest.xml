@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.geo.geo_test">
-
-    <uses-sdk
-        android:minSdkVersion="10"
-        android:targetSdkVersion="19" />
+    package="com.geomoby.demoapp">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -14,44 +10,50 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION" />
 
     <uses-feature
         android:name="android.hardware.bluetooth_le"
         android:required="true" />
 
-
-
     <application
+        android:name="com.geomoby.demoapp.GeoMobyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:name="android.support.multidex.MultiDexApplication">
-        <activity android:name=".MainActivity">
+        android:theme="@style/AppTheme">
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" />
+
+        <activity
+            android:name="com.geomoby.demoapp.ui.splash.SplashActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="com.geomoby.demoapp.ui.main.MainActivity"
+            android:launchMode="singleInstance"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.geomoby.demoapp.ui.discount.DiscountActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.geomoby.demoapp.ui.settings.SettingsActivity"
+            android:screenOrientation="portrait" />
 
-
-        <!-- ****** START: Firebase Services ******* -->
+        <!-- ****** START: Firebase Service ******* -->
         <service
-            android:name=".firebase.GeomobyInstanceIDListenerService">
+            android:name=".logic.firebase.FirebaseManager">
             <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-        <service
-            android:name=".firebase.GeomobyFcmListenerService">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
-            </intent-filter>
-        </service>
-        <!-- ****** END: Firebase Services ******* -->
-
+        <!-- ****** END: Firebase Service ******* -->
 
         <!-- ****** START: GeoMoby Activities ******* -->
         <service
@@ -59,8 +61,8 @@
             android:enabled="true"
             android:exported="true"
             android:launchMode="singleTop" />
-
         <service android:name="com.geomoby.managers.GeomobyBeaconManager" />
+
         <receiver android:name="com.geomoby.managers.GeomobyGPSManager" />
         <receiver
             android:name="com.geomoby.managers.GeomobyBootManager"
@@ -73,19 +75,25 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>
-        <!-- ****** END: GeoMoby Activities ******* -->
-
         <receiver
-            android:name=".CallBacksReceiver"
+            android:name="com.geomoby.demoapp.logic.geomoby.GeoMobyActionReceiver"
             android:enabled="true">
             <intent-filter>
-                <action android:name="GeomobyEventEnter" />
-                <action android:name="GeomobyEventDwell" />
-                <action android:name="GeomobyEventExit" />
                 <action android:name="GeomobyActionData" />
                 <action android:name="GeomobyActionBasic" />
             </intent-filter>
         </receiver>
+        <receiver
+            android:name="com.geomoby.demoapp.logic.geomoby.GeoMobyStateReceiver"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="BroadcastInitLocation" />
+                <action android:name="GEOMOBY_NEW_DISTANCE" />
+                <action android:name="GEOMOBY_BEACON_SCAN" />
+                <action android:name="GEOMOBY_NEW_FENCE_LIST" />
+            </intent-filter>
+        </receiver>
+        <!-- ****** END: GeoMoby Activities ******* -->
     </application>
 
 </manifest>
