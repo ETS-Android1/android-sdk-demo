@@ -43,7 +43,7 @@ public class MainPresenter extends MvpPresenter<MainView> implements GeoMobyMana
 
     public void handlePermissionRationale(final String permission, int requestCode, boolean result) {
         if (!result) {
-            getViewState().onShowRationaleDialog(permission, requestCode, "You need to allow access to Your Location");
+            getViewState().onShowRationaleDialog(permission, requestCode, "You need to allow access to your location");
         } else {
             requestPermission(permission, requestCode);
         }
