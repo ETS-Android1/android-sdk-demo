@@ -13,6 +13,8 @@ import com.geomoby.demoapp.logic.firebase.FirebaseManager;
 import com.geomoby.managers.GeomobyDataManager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class GeoMobyManager implements GeomobyServiceCallback {
     private final String TAG = GeoMobyManager.class.getSimpleName();
@@ -31,13 +33,19 @@ public class GeoMobyManager implements GeomobyServiceCallback {
 
     private GeoMobyManager() {
         // Build geomoby. build() method returns Geomoby object
-        new GeoMoby.Builder(GeoMobyApplication.getContext(), "XXR7Z6A5", this)
+        new GeoMoby.Builder(GeoMobyApplication.getContext(), "46WKUL6S", this)
                 .setDevMode(true)
                 .setUUID("f7826da6-4fa2-4e98-8024-bc5b71e0893e")
                 .setSilenceWindow(23,5)
                 .setForeground(GeoMobyApplication.getContext().getResources().getString(R.string.app_name), "This notification shows that application is working", R.mipmap.ic_launcher)
                 .forceForeground(true)
                 .build();
+
+        Map<String, String> tags = new HashMap<>();
+        tags.put("gender", "male");
+        tags.put("age", "27");
+        tags.put("membership", "gold");
+        GeoMoby.setTags(tags);
     }
 
     public void setDelegate(GeoMobyManagerCallback delegate) {
