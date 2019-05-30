@@ -7,16 +7,20 @@ import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.RequiresApi;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+@RequiresApi(api = Build.VERSION_CODES.N)
 public class NotificationManager {
     private static final String NOTIFICATION_CHANNEL_ID = "GeoMobyNotificationChannelID";
     private static final String NOTIFICATION_CHANNEL_NAME = "GeoMobyNotificationChannelName";
     private static final int NOTIFICATION_IMPRTANCE = android.app.NotificationManager.IMPORTANCE_HIGH;
 
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public static void sendNotification(Context context, Intent intent, String title, String body, @DrawableRes int icon) {
 
         TaskStackBuilder stackBuilder = TaskStackBuilder
@@ -32,7 +36,8 @@ public class NotificationManager {
                 .setTicker(title)
                 .setWhen(System.currentTimeMillis())
                 .setAutoCancel(true)
-                .setContentIntent(pendingIntent);
+                .setContentIntent(pendingIntent)
+                .setChannelId(NOTIFICATION_CHANNEL_ID);
 
         android.app.NotificationManager notificationManager = (android.app.NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
