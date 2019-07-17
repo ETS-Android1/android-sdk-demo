@@ -8,8 +8,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.RequiresApi;
+
+import androidx.annotation.DrawableRes;
+import androidx.annotation.RequiresApi;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

@@ -1,7 +1,8 @@
 package com.geomoby.demoapp;
 
 import android.content.Context;
-import android.support.multidex.MultiDexApplication;
+
+import androidx.multidex.MultiDexApplication;
 
 import com.crashlytics.android.Crashlytics;
 
