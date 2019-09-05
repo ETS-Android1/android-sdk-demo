@@ -12,6 +12,7 @@ public class DiscountPresenter extends MvpPresenter<DiscountView> {
     public void activityCreated(Intent intent) {
         String value = intent.getStringExtra("id");
 
+        assert value != null;
         switch (value) {
             case "Enter":
                 changeState("Welcome to our venue", R.mipmap.hotel, R.mipmap.bg_1);

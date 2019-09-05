@@ -17,7 +17,6 @@ public class SettingsActivity extends MvpAppCompatActivity implements SettingsVi
     private Button mMapStandardButton;
     private Button mMapHybridButton;
     private Button mMapSatelliteButton;
-    private ImageView mSettingsBackButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +47,7 @@ public class SettingsActivity extends MvpAppCompatActivity implements SettingsVi
             }
         });
 
-        mSettingsBackButton = findViewById(R.id.settingsBackButton);
+        ImageView mSettingsBackButton = findViewById(R.id.settingsBackButton);
         mSettingsBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

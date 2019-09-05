@@ -3,6 +3,9 @@ package com.geomoby.demoapp.logic.geomoby;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
 
 import com.geomoby.GeoMoby;
 import com.geomoby.classes.GeomobyActionBasic;
@@ -14,6 +17,7 @@ import com.geomoby.demoapp.ui.main.MainActivity;
 
 public class GeoMobyActionReceiver extends BroadcastReceiver {
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();

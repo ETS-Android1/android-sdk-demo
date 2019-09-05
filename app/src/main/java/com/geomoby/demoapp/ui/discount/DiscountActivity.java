@@ -41,11 +41,6 @@ public class DiscountActivity extends MvpAppCompatActivity implements DiscountVi
     }
 
     @Override
-    public void onBackPressed() {
-        mDiscountPresenter.finishActivity();
-    }
-
-    @Override
     public void onSetBackground(int background) {
         mDiscountBackground.setImageResource(background);
     }

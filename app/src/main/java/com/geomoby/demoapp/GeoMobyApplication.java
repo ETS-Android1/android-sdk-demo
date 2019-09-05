@@ -4,8 +4,6 @@ import android.content.Context;
 
 import androidx.multidex.MultiDexApplication;
 
-import com.crashlytics.android.Crashlytics;
-
 public class GeoMobyApplication extends MultiDexApplication {
 
     private static Context mContext;

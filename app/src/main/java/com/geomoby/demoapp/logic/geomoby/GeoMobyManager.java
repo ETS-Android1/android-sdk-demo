@@ -31,11 +31,12 @@ public class GeoMobyManager implements GeomobyServiceCallback {
 
     private GeoMobyManager() {
         // Build geomoby. build() method returns Geomoby object
-        new GeoMoby.Builder(GeoMobyApplication.getContext(), "XXR7Z6A5", this)
+        new GeoMoby.Builder(GeoMobyApplication.getContext(), "ZR4OWDRF", this)
                 .setDevMode(true)
-                .setUUID("f7826da6-4fa2-4e98-8024-bc5b71e0893e")
+                .setUUID("30cab38c-6921-43f4-b005-24af1e070ff2")
                 .setSilenceWindow(23,5)
-                .setForeground(GeoMobyApplication.getContext().getResources().getString(R.string.app_name), "This notification shows that application is working", R.mipmap.ic_launcher)
+                .setForeground(GeoMobyApplication.getContext().getResources().getString(R.string.app_name),
+                        "This notification shows that application is working", R.mipmap.ic_launcher)
                 .forceForeground(true)
                 .build();
     }

@@ -35,6 +35,7 @@ public class MainPresenter extends MvpPresenter<MainView> implements GeoMobyMana
     }
 
     private void checkPermission(final String permission, int requestCode) {
+        
         if (ContextCompat.checkSelfPermission(GeoMobyApplication.getContext(), permission) != PackageManager.PERMISSION_GRANTED) {
             getViewState().onCheckPermissionRationale(permission, requestCode);
         } else {

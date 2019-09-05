@@ -99,20 +99,6 @@ public class MainActivity extends MvpAppCompatActivity implements MainView, Navi
     }
 
     @Override
-    public void onBackPressed() {
-        if (mDrawer.isDrawerOpen(GravityCompat.START)) {
-            mDrawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        mMainPresenter.handlePermissionResult(requestCode, permissions, grantResults);
-    }
-
-    @Override
     public void onCheckPermissionRationale(final String permission, int requestCode) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             mMainPresenter.handlePermissionRationale(permission, requestCode, shouldShowRequestPermissionRationale(permission));
@@ -283,15 +269,10 @@ public class MainActivity extends MvpAppCompatActivity implements MainView, Navi
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
 
-        switch (id) {
-            case R.id.nav_settings: {
-                Intent intent = new Intent(this, SettingsActivity.class);
-                startActivity(intent);
-                break;
-            }
-            /*case R.id.nav_logs: {
-                break;
-            }*/
+        if(id == R.id.nav_settings) {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
+
         }
 
         mDrawer.closeDrawer(GravityCompat.START);
