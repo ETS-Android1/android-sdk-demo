@@ -11,7 +11,6 @@ import com.geomoby.demoapp.GeoMobyApplication;
 import com.geomoby.demoapp.R;
 import com.geomoby.demoapp.logic.firebase.FirebaseManager;
 import com.geomoby.managers.GeomobyDataManager;
-
 import java.util.ArrayList;
 
 public class GeoMobyManager implements GeomobyServiceCallback {
@@ -69,7 +68,9 @@ public class GeoMobyManager implements GeomobyServiceCallback {
     }
 
     public void start() {
+
         if (!mStarted) {
+
             GeoMoby.start();
             mStarted = true;
         }

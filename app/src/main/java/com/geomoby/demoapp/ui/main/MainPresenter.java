@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.core.content.ContextCompat;
 
@@ -70,6 +71,7 @@ public class MainPresenter extends MvpPresenter<MainView> implements GeoMobyMana
     }
 
     public void mapReady() {
+
         int mapMode = SettingsManager.getInstance().getMapMode();
         switch (mapMode) {
             case SettingsManager.MAP_MODE_STANDARD:
