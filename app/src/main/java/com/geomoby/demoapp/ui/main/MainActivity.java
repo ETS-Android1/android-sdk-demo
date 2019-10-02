@@ -9,7 +9,7 @@ import android.graphics.Color;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
+
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -17,7 +17,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
+
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -43,8 +43,7 @@ import com.google.android.material.navigation.NavigationView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends MvpAppCompatActivity implements MainView,
-        NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
+public class MainActivity extends MvpAppCompatActivity implements MainView, NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
 
     @InjectPresenter
     MainPresenter mMainPresenter;
@@ -88,21 +87,6 @@ public class MainActivity extends MvpAppCompatActivity implements MainView,
         mMainLocationText = findViewById(R.id.mainLocationText);
         mMainBeaconText = findViewById(R.id.mainBeaconText);
         mMainProgress = findViewById(R.id.mainProgress);
-
-//        int permissionStatus = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION);
-//        int permissionStatus2 = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
-//
-//        if (permissionStatus == PackageManager.PERMISSION_GRANTED && permissionStatus2 == PackageManager.PERMISSION_GRANTED) {
-//
-//
-//        } else {
-//            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_COARSE_LOCATION},
-//                    1);
-//            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION},
-//                    2);
-//        }
-
-
     }
 
     @Override
@@ -118,9 +102,22 @@ public class MainActivity extends MvpAppCompatActivity implements MainView,
     }
 
     @Override
+    public void onBackPressed() {
+        if (mDrawer.isDrawerOpen(GravityCompat.START)) {
+            mDrawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        mMainPresenter.handlePermissionResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
     public void onCheckPermissionRationale(final String permission, int requestCode) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-
             mMainPresenter.handlePermissionRationale(permission, requestCode, shouldShowRequestPermissionRationale(permission));
         }
     }
@@ -143,8 +140,7 @@ public class MainActivity extends MvpAppCompatActivity implements MainView,
     @Override
     public void onRequestForPermissions(String[] permissions, int requestCode) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//            requestPermissions(permissions, requestCode);
-            mMapFragment.requestPermissions(permissions, requestCode);
+            requestPermissions(permissions, requestCode);
         }
     }
 
@@ -179,10 +175,9 @@ public class MainActivity extends MvpAppCompatActivity implements MainView,
 
     @Override
     public void onInitLocationChanged(double latitude, double longitude) {
-
         if (mMap != null) {
             LatLng latlong = new LatLng(latitude, longitude);
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latlong, 20));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latlong, 14.0f));
         }
     }
 
@@ -290,10 +285,16 @@ public class MainActivity extends MvpAppCompatActivity implements MainView,
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
-        if(id == R.id.nav_settings) {
-            Intent intent = new Intent(this, SettingsActivity.class);
-            startActivity(intent);
 
+        switch (id) {
+            case R.id.nav_settings: {
+                Intent intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
+                break;
+            }
+            /*case R.id.nav_logs: {
+                break;
+            }*/
         }
 
         mDrawer.closeDrawer(GravityCompat.START);
@@ -302,18 +303,12 @@ public class MainActivity extends MvpAppCompatActivity implements MainView,
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-
         mMap = googleMap;
         mMap.getUiSettings().setCompassEnabled(false);
-        mMap.getUiSettings().setMyLocationButtonEnabled(true);
-        mMap.getUiSettings().setZoomControlsEnabled(true);
-        mMap.setMyLocationEnabled(true);
-        if (ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        mMap.getUiSettings().setMyLocationButtonEnabled(false);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mMap.setMyLocationEnabled(true);
         }
-
         mMainPresenter.mapReady();
     }
-
 }

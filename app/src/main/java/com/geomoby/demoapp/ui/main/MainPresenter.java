@@ -48,6 +48,7 @@ public class MainPresenter extends MvpPresenter<MainView> implements GeoMobyMana
         if (!result) {
             getViewState().onShowRationaleDialog(permission, requestCode, "You need to allow access to your location");
         } else {
+
             requestPermission(permission, requestCode);
         }
     }
@@ -84,6 +85,7 @@ public class MainPresenter extends MvpPresenter<MainView> implements GeoMobyMana
                 getViewState().onSetMapModeSatellite();
                 break;
         }
+
         startGeoMobyManager();
         startLocationManager();
     }
