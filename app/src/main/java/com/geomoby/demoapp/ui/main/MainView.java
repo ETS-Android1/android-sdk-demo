@@ -1,11 +1,12 @@
 package com.geomoby.demoapp.ui.main;
 
-import com.arellomobile.mvp.MvpView;
-import com.arellomobile.mvp.viewstate.strategy.AddToEndSingleStrategy;
-import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
 import com.geomoby.classes.GeomobyFenceView;
 
 import java.util.ArrayList;
+
+import moxy.MvpView;
+import moxy.viewstate.strategy.AddToEndSingleStrategy;
+import moxy.viewstate.strategy.StateStrategyType;
 
 @StateStrategyType(AddToEndSingleStrategy.class)
 public interface MainView extends MvpView {

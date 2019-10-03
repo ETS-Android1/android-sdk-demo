@@ -5,9 +5,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
-import com.arellomobile.mvp.MvpAppCompatActivity;
-import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.geomoby.demoapp.R;
+
+import moxy.MvpAppCompatActivity;
+import moxy.presenter.InjectPresenter;
 
 public class SettingsActivity extends MvpAppCompatActivity implements SettingsView {
 

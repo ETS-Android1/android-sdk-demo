@@ -21,8 +21,9 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-import com.arellomobile.mvp.MvpAppCompatActivity;
-import com.arellomobile.mvp.presenter.InjectPresenter;
+import moxy.MvpAppCompatActivity;
+import moxy.presenter.InjectPresenter;
+
 import com.geomoby.classes.GeomobyFenceView;
 import com.geomoby.classes.GeomobyGeometryItem;
 import com.geomoby.demoapp.R;
