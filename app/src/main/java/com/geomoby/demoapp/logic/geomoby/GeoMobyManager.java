@@ -30,7 +30,7 @@ public class GeoMobyManager implements GeomobyServiceCallback {
 
     private GeoMobyManager() {
         // Build geomoby. build() method returns Geomoby object
-        new GeoMoby.Builder(GeoMobyApplication.getContext(), "ZR4OWDRF", this)
+        new GeoMoby.Builder(GeoMobyApplication.getContext(), "46WKUL6S", this)
                 .setDevMode(true)
                 .setUUID("30cab38c-6921-43f4-b005-24af1e070ff2")
                 .setSilenceWindow(23,5)

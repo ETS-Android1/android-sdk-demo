@@ -7,8 +7,8 @@ import android.os.Build;
 
 import androidx.core.content.ContextCompat;
 
-import com.arellomobile.mvp.InjectViewState;
-import com.arellomobile.mvp.MvpPresenter;
+import moxy.InjectViewState;
+import moxy.MvpPresenter;
 import com.geomoby.classes.GeomobyFenceView;
 import com.geomoby.demoapp.GeoMobyApplication;
 import com.geomoby.demoapp.logic.geomoby.GeoMobyManager;

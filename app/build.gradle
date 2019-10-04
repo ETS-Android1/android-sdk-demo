@@ -12,6 +12,17 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
+
+        // Moxy Migration
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [
+                        disableEmptyStrategyCheck: 'false',
+                        enableEmptyStrategyHelper: 'true',
+                        defaultMoxyStrategy: 'moxy.viewstate.strategy.OneExecutionStateStrategy'
+                ]
+            }
+        }
     }
 
     buildTypes {
@@ -51,10 +62,11 @@ dependencies {
 
     implementation files('libs/geomoby-v2.jar')
     implementation 'gr.pantrif:easy-android-splash-screen:0.0.1'
-
-    implementation 'tech.schoolhelper:moxy-x:1.7.0'
-    implementation 'tech.schoolhelper:moxy-x-app-compat:1.7.0'
-    annotationProcessor 'tech.schoolhelper:moxy-x-compiler:1.7.0'
+    
+    implementation "com.github.moxy-community:moxy:2.0.2"
+    annotationProcessor "com.github.moxy-community:moxy-compiler:2.0.2"
+    implementation "com.github.moxy-community:moxy-app-compat:2.0.2"
+    implementation "com.github.moxy-community:moxy-material:2.0.2"
 
     implementation 'com.squareup.retrofit2:retrofit:2.6.1'
     implementation 'com.squareup.retrofit2:converter-gson:2.5.0'

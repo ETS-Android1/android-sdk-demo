@@ -2,8 +2,8 @@ package com.geomoby.demoapp.ui.discount;
 
 import android.content.Intent;
 
-import com.arellomobile.mvp.InjectViewState;
-import com.arellomobile.mvp.MvpPresenter;
+import moxy.InjectViewState;
+import moxy.MvpPresenter;
 import com.geomoby.demoapp.R;
 
 @InjectViewState

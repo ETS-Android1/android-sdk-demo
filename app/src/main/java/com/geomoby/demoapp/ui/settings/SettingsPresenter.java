@@ -1,7 +1,7 @@
 package com.geomoby.demoapp.ui.settings;
 
-import com.arellomobile.mvp.InjectViewState;
-import com.arellomobile.mvp.MvpPresenter;
+import moxy.InjectViewState;
+import moxy.MvpPresenter;
 import com.geomoby.demoapp.logic.settings.SettingsManager;
 
 @InjectViewState
