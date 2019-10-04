@@ -70,7 +70,6 @@ public class GeoMobyManager implements GeomobyServiceCallback {
     public void start() {
 
         if (!mStarted) {
-
             GeoMoby.start();
             mStarted = true;
         }

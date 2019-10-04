@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
-import android.util.Log;
 
 import androidx.core.content.ContextCompat;
 
@@ -48,7 +47,6 @@ public class MainPresenter extends MvpPresenter<MainView> implements GeoMobyMana
         if (!result) {
             getViewState().onShowRationaleDialog(permission, requestCode, "You need to allow access to your location");
         } else {
-
             requestPermission(permission, requestCode);
         }
     }

@@ -68,7 +68,6 @@ public class MainActivity extends MvpAppCompatActivity implements MainView, Navi
         setContentView(R.layout.activity_main);
 
         mMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mainMapFragment);
-
         mDrawer = findViewById(R.id.mainDrawerLayout);
 
         NavigationView navigationView = findViewById(R.id.mainNavigationView);
