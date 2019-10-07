@@ -42,7 +42,6 @@ public class GeoMobyManager implements GeomobyServiceCallback {
 
     public void setDelegate(GeoMobyManagerCallback delegate) {
         mDelegate = delegate;
-
         // Initial states
         if (mDelegate != null) {
 
@@ -68,7 +67,6 @@ public class GeoMobyManager implements GeomobyServiceCallback {
     }
 
     public void start() {
-
         if (!mStarted) {
             GeoMoby.start();
             mStarted = true;
