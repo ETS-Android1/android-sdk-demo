@@ -10,12 +10,14 @@ import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 
 import androidx.core.view.GravityCompat;
@@ -63,6 +65,7 @@ public class MainActivity extends MvpAppCompatActivity implements MainView, Navi
     private TextView mMainBeaconText;
     private View mMainProgress;
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,6 +90,8 @@ public class MainActivity extends MvpAppCompatActivity implements MainView, Navi
         mMainLocationText = findViewById(R.id.mainLocationText);
         mMainBeaconText = findViewById(R.id.mainBeaconText);
         mMainProgress = findViewById(R.id.mainProgress);
+
+
     }
 
     @Override
@@ -114,6 +119,7 @@ public class MainActivity extends MvpAppCompatActivity implements MainView, Navi
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         mMainPresenter.handlePermissionResult(requestCode, permissions, grantResults);
     }
+
 
     @Override
     public void onCheckPermissionRationale(final String permission, int requestCode) {
