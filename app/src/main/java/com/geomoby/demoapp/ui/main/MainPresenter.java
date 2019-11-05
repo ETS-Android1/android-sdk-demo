@@ -48,7 +48,8 @@ public class MainPresenter extends MvpPresenter<MainView> implements GeoMobyMana
                         @Override
                         public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
                             Log.e("Dexter", "Permissions should be shown!");
-                            token.continuePermissionRequest();
+                            getViewState().showPermissionRationale(token);
+                            //token.continuePermissionRequest();
                         }
             }).withErrorListener(new PermissionRequestErrorListener() {
                 @Override public void onError(DexterError error) {

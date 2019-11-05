@@ -1,6 +1,7 @@
 package com.geomoby.demoapp.ui.main;
 
 import com.geomoby.classes.GeomobyFenceView;
+import com.karumi.dexter.PermissionToken;
 
 import java.util.ArrayList;
 
@@ -13,6 +14,7 @@ public interface MainView extends MvpView {
     //void onCheckPermissionRationale(final String permission, int requestCode);
    // void onShowRationaleDialog(final String permission, final int requestCode, String text);
     //void onRequestForPermissions(String[] permissions, int requestCode);
+    void showPermissionRationale(PermissionToken token);
     void onShowProgress(boolean show);
     void onStartMap();
     void onSetMapModeStandard();
