@@ -97,7 +97,7 @@ public class MainActivity extends MvpAppCompatActivity implements MainView, Navi
     @Override
     protected void onStart() {
         super.onStart();
-        mMainPresenter.activityStarted();
+        mMainPresenter.activityStarted(this);
     }
 
     @Override
@@ -115,7 +115,7 @@ public class MainActivity extends MvpAppCompatActivity implements MainView, Navi
         }
     }
 
-    @Override
+    /*@Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         mMainPresenter.handlePermissionResult(requestCode, permissions, grantResults);
     }
@@ -148,7 +148,7 @@ public class MainActivity extends MvpAppCompatActivity implements MainView, Navi
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             requestPermissions(permissions, requestCode);
         }
-    }
+    }*/
 
     @Override
     public void onShowProgress(boolean show) {
@@ -312,9 +312,9 @@ public class MainActivity extends MvpAppCompatActivity implements MainView, Navi
         mMap = googleMap;
         mMap.getUiSettings().setCompassEnabled(false);
         mMap.getUiSettings().setMyLocationButtonEnabled(false);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        //if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mMap.setMyLocationEnabled(true);
-        }
+        //}
         mMainPresenter.mapReady();
     }
 }

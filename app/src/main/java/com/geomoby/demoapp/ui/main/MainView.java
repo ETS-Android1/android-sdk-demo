@@ -10,9 +10,9 @@ import moxy.viewstate.strategy.StateStrategyType;
 
 @StateStrategyType(AddToEndSingleStrategy.class)
 public interface MainView extends MvpView {
-    void onCheckPermissionRationale(final String permission, int requestCode);
-    void onShowRationaleDialog(final String permission, final int requestCode, String text);
-    void onRequestForPermissions(String[] permissions, int requestCode);
+    //void onCheckPermissionRationale(final String permission, int requestCode);
+   // void onShowRationaleDialog(final String permission, final int requestCode, String text);
+    //void onRequestForPermissions(String[] permissions, int requestCode);
     void onShowProgress(boolean show);
     void onStartMap();
     void onSetMapModeStandard();

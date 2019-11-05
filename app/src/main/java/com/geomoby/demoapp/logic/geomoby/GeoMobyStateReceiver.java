@@ -8,7 +8,7 @@ import android.location.Location;
 import com.geomoby.classes.GeomobyFenceView;
 import com.geomoby.managers.GeomobyDataManager;
 import com.geomoby.managers.GeomobyGPSManager;
-import com.geomoby.services.GeomobyJobService;
+import com.geomoby.services.GeomobyService;
 
 
 import java.util.ArrayList;
@@ -25,18 +25,18 @@ public class GeoMobyStateReceiver extends BroadcastReceiver {
                 GeoMobyManager.getInstance().initLocationChanged(location);
                 break;
 
-            case GeomobyJobService.NEW_DISTANCE:
+            case GeomobyService.NEW_DISTANCE:
                 String distance = intent.getExtras().getString("distance");
                 boolean inside = intent.getExtras().getBoolean("inside");
                 GeoMobyManager.getInstance().distanceChanged(distance, inside);
                 break;
 
-            case GeomobyJobService.BEACON_SCAN:
+            case GeomobyService.BEACON_SCAN:
                 boolean scanning = intent.getExtras().getBoolean("scanning");
                 GeoMobyManager.getInstance().beaconScanChanged(scanning);
                 break;
 
-            case GeomobyJobService.NEW_FENCE_LIST:
+            case GeomobyService.NEW_FENCE_LIST:
                 ArrayList<GeomobyFenceView> fences = intent.getExtras().getParcelableArrayList("fences");
                 GeoMobyManager.getInstance().fenceListChanged(fences);
                 break;
