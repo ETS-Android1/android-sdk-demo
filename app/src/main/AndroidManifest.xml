@@ -102,7 +102,7 @@
                 <action android:name="GeomobyActionBasic" />
             </intent-filter>
         </receiver>
-        <receiver
+        <!--<receiver
             android:name="com.geomoby.demoapp.logic.geomoby.GeoMobyStateReceiver"
             android:enabled="true">
             <intent-filter>
@@ -111,7 +111,7 @@
                 <action android:name="GEOMOBY_BEACON_SCAN" />
                 <action android:name="GEOMOBY_NEW_FENCE_LIST" />
             </intent-filter>
-        </receiver>
+        </receiver>-->
         <!-- ****** END: GeoMoby Activities ******* -->
     </application>
 
