@@ -20,6 +20,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -28,6 +29,7 @@ import moxy.presenter.InjectPresenter;
 
 import com.geomoby.classes.GeomobyFenceView;
 import com.geomoby.classes.GeomobyGeometryItem;
+import com.geomoby.demoapp.GeoService;
 import com.geomoby.demoapp.R;
 
 import com.geomoby.demoapp.ui.settings.SettingsActivity;
@@ -70,6 +72,10 @@ public class MainActivity extends MvpAppCompatActivity implements MainView, Navi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Intent serviceIntent = new Intent(this, GeoService.class);
+        ContextCompat.startForegroundService(this, serviceIntent);
+
 
         mMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mainMapFragment);
         mDrawer = findViewById(R.id.mainDrawerLayout);

@@ -81,25 +81,25 @@ public class GeoMobyManager implements GeomobyServiceCallback {
         GeoMoby.updateInstanceId(firebaseId);
     }
 
-    void initLocationChanged(Location location) {
+    public void initLocationChanged(Location location) {
         if (mDelegate != null) {
             mDelegate.onInitLocationChanged(location);
         }
     }
 
-    void distanceChanged(String distance, boolean inside) {
+    public void distanceChanged(String distance, boolean inside) {
         if (mDelegate != null) {
             mDelegate.onDistanceChanged(distance, inside);
         }
     }
 
-    void beaconScanChanged(boolean scanning) {
+    public void beaconScanChanged(boolean scanning) {
         if (mDelegate != null) {
             mDelegate.onBeaconScanChanged(scanning);
         }
     }
 
-    void fenceListChanged(ArrayList<GeomobyFenceView> fences) {
+    public void fenceListChanged(ArrayList<GeomobyFenceView> fences) {
         if (mDelegate != null) {
             mDelegate.onFenceListChanged(fences);
         }
