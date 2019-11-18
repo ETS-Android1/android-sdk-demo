@@ -96,14 +96,14 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>
-        <receiver
+        <!--<receiver
             android:name=".logic.geomoby.GeoMobyActionReceiver"
             android:enabled="true">
             <intent-filter>
                 <action android:name="GeomobyActionData" />
                 <action android:name="GeomobyActionBasic" />
             </intent-filter>
-        </receiver>
+        </receiver>-->
     </application>
 
 </manifest>

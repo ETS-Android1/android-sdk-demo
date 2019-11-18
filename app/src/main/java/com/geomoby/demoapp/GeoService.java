@@ -15,8 +15,12 @@ import android.os.IBinder;
 
 import androidx.core.app.NotificationCompat;
 
+import com.geomoby.GeoMoby;
+import com.geomoby.classes.GeomobyActionBasic;
+import com.geomoby.classes.GeomobyActionData;
 import com.geomoby.classes.GeomobyFenceView;
 import com.geomoby.demoapp.logic.geomoby.GeoMobyManager;
+import com.geomoby.demoapp.ui.discount.DiscountActivity;
 import com.geomoby.demoapp.ui.main.MainActivity;
 import com.geomoby.managers.GeomobyDataManager;
 import com.geomoby.managers.GeomobyGPSManager;
@@ -55,9 +59,31 @@ public class GeoService extends Service {
                     ArrayList<GeomobyFenceView> fences = intent.getExtras().getParcelableArrayList("fences");
                     GeoMobyManager.getInstance().fenceListChanged(fences);
                     break;
+
+                case GeoMoby.GeomobyActionData:
+                    GeomobyActionData geomobyActionData = (GeomobyActionData) intent.getSerializableExtra(GeoMoby.GeomobyActionDataContent);
+                    if (geomobyActionData != null) {
+                        String key = "id";
+                        String value = geomobyActionData.getValue(key);
+                        if (value != null) {
+                            Intent openIntent = new Intent(context, DiscountActivity.class);
+                            openIntent.putExtra(key, value);
+                            com.geomoby.demoapp.logic.system.NotificationManager.sendNotification(context, openIntent, "", "Data Action Received!", R.mipmap.data);
+                        }
+                    }
+                    break;
+
+                case GeoMoby.GeomobyActionBasic:
+                    GeomobyActionBasic geomobyActionBasic = (GeomobyActionBasic) intent.getSerializableExtra(GeoMoby.GeomobyActionBasicContent);
+                    if (geomobyActionBasic != null) {
+                        Intent openIntent = new Intent(context, MainActivity.class);
+                        com.geomoby.demoapp.logic.system.NotificationManager.sendNotification(context, openIntent, geomobyActionBasic.getTitle(), geomobyActionBasic.getBody(), R.mipmap.message);
+                    }
+                    break;
             }
         }
     };
+
 
     public GeoService() {
     }
@@ -75,6 +101,9 @@ public class GeoService extends Service {
         filter.addAction("GEOMOBY_NEW_DISTANCE");
         filter.addAction("GEOMOBY_BEACON_SCAN");
         filter.addAction("GEOMOBY_NEW_FENCE_LIST");
+
+        filter.addAction("GeomobyActionData");
+        filter.addAction("GeomobyActionBasic");
         getApplicationContext().registerReceiver(mReceiver, filter);
 
 
