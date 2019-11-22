@@ -13,7 +13,6 @@ import com.geomoby.demoapp.ui.discount.DiscountActivity;
 import com.geomoby.demoapp.ui.main.MainActivity;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
@@ -25,16 +24,13 @@ public class GeoService extends GeomobyUserService {
     }
 
     @Override
-    public void geomobyActionBasic(@Nullable GeomobyActionBasic geomobyActionBasic) {
-        if (geomobyActionBasic != null) {
+    public void geomobyActionBasic(GeomobyActionBasic geomobyActionBasic) {
             Intent openIntent = new Intent(this, MainActivity.class);
             NotificationManager.sendNotification(this, openIntent, geomobyActionBasic.getTitle(), geomobyActionBasic.getBody(), R.mipmap.message);
-        }
     }
 
     @Override
-    public void geomobyActionData(@Nullable GeomobyActionData geomobyActionData) {
-        if (geomobyActionData != null) {
+    public void geomobyActionData(GeomobyActionData geomobyActionData) {
             String key = "id";
             String value = geomobyActionData.getValue(key);
             if (value != null) {
@@ -42,16 +38,15 @@ public class GeoService extends GeomobyUserService {
                 openIntent.putExtra(key, value);
                 NotificationManager.sendNotification(this, openIntent, "", "Data Action Received!", R.mipmap.data);
             }
-        }
     }
 
     @Override
-    public void newDistanse(@Nullable String distance, boolean inside) {
+    public void newDistanse(String distance, boolean inside) {
         GeoMobyManager.getInstance().distanceChanged(distance, inside);
     }
 
     @Override
-    public void newFenceList(@Nullable ArrayList<GeomobyFenceView> fences) {
+    public void newFenceList(ArrayList<GeomobyFenceView> fences) {
         GeoMobyManager.getInstance().fenceListChanged(fences);
     }
 
