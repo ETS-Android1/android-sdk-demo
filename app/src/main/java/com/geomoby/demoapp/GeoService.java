@@ -41,12 +41,12 @@ public class GeoService extends GeomobyUserService {
     }
 
     @Override
-    public void newDistanse(String distance, boolean inside) {
+    public void newDistanse(@NotNull String distance, boolean inside) {
         GeoMobyManager.getInstance().distanceChanged(distance, inside);
     }
 
     @Override
-    public void newFenceList(ArrayList<GeomobyFenceView> fences) {
+    public void newFenceList(@NotNull ArrayList<GeomobyFenceView> fences) {
         GeoMobyManager.getInstance().fenceListChanged(fences);
     }
 
@@ -62,7 +62,7 @@ public class GeoService extends GeomobyUserService {
     }
 
     @Override
-    public int getNotificationSmallIconId() {
+    public Integer getNotificationSmallIconId() {
         return R.mipmap.ic_launcher;
     }
 
