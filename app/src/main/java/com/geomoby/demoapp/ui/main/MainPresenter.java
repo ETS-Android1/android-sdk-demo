@@ -58,7 +58,7 @@ public class MainPresenter extends MvpPresenter<MainView> implements GeoMobyMana
 
     private void requestPermission(final String permission, int requestCode) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            getViewState().onRequestForPermissions(new String[]{permission, Manifest.permission.ACCESS_BACKGROUND_LOCATION}, requestCode);
+            getViewState().onRequestForPermissions(new String[]{permission, Manifest.permission.ACCESS_BACKGROUND_LOCATION, Manifest.permission.ACTIVITY_RECOGNITION}, requestCode);
         } else {
             getViewState().onRequestForPermissions(new String[]{permission}, requestCode);
         }
