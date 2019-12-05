@@ -36,7 +36,30 @@ public class GeoService extends GeomobyUserService {
             if (value != null) {
                 Intent openIntent = new Intent(this, DiscountActivity.class);
                 openIntent.putExtra(key, value);
-                NotificationManager.sendNotification(this, openIntent, "", "Data Action Received!", R.mipmap.data);
+
+                String event = geomobyActionData.getValue("id");
+                int icon = R.mipmap.data;
+                String title = "Data Action Received!";
+                switch (event) {
+                    case "Enter":
+                        title = "Welcome to our venue";
+                        icon = R.mipmap.hotel;
+                        break;
+                    case "Exit":
+                        title = "Good Bye and see you again soon";
+                        icon = R.mipmap.good_bye;
+                        break;
+                    case "Drink":
+                        title = "Get one drink for only $5";
+                        icon = R.mipmap.drink;
+                        break;
+                    case "Offer":
+                        title = "Today's Special offer";
+                        icon = R.mipmap.offer;
+                        break;
+                }
+
+                NotificationManager.sendNotification(this, openIntent, title, title, icon);
             }
     }
 
