@@ -1,7 +1,10 @@
 package com.geomoby.demoapp;
 
+import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
+
+import androidx.core.content.ContextCompat;
 
 import com.geomoby.GeomobyUserService;
 import com.geomoby.classes.GeomobyActionBasic;
@@ -93,6 +96,18 @@ public class GeoService extends GeomobyUserService {
     @Override
     public String getNotificationTitle() {
         return "Geomoby demo app";
+    }
+
+    public static void setForeground(Context context) {
+        Intent intent = new Intent(context, GeoService.class);
+        intent.setAction(GeomobyUserService.ACTION_FOREGROUND);
+        ContextCompat.startForegroundService(context, intent);
+    }
+
+    public static void disableForeground(Context context) {
+        Intent intent = new Intent(context, GeoService.class);
+        intent.setAction(GeomobyUserService.ACTION_SERVICE);
+        ContextCompat.startForegroundService(context, intent);
     }
 
 }

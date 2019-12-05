@@ -9,8 +9,6 @@ import android.graphics.Color;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
-
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -19,19 +17,17 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
-
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-
-import moxy.MvpAppCompatActivity;
-import moxy.presenter.InjectPresenter;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleEventObserver;
+import androidx.lifecycle.LifecycleOwner;
 
 import com.geomoby.classes.GeomobyFenceView;
 import com.geomoby.classes.GeomobyGeometryItem;
 import com.geomoby.demoapp.GeoService;
 import com.geomoby.demoapp.R;
-
 import com.geomoby.demoapp.ui.settings.SettingsActivity;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -47,6 +43,9 @@ import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import moxy.MvpAppCompatActivity;
+import moxy.presenter.InjectPresenter;
 
 public class MainActivity extends MvpAppCompatActivity implements MainView, NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
 
@@ -75,6 +74,19 @@ public class MainActivity extends MvpAppCompatActivity implements MainView, Navi
 
         Intent serviceIntent = new Intent(this, GeoService.class);
         ContextCompat.startForegroundService(this, serviceIntent);
+
+        getLifecycle().addObserver(new LifecycleEventObserver() {
+            @Override
+            public void onStateChanged(@NonNull LifecycleOwner source, @NonNull Lifecycle.Event event) {
+                if (event == Lifecycle.Event.ON_RESUME) {
+                    GeoService.disableForeground(getApplicationContext());
+                }
+
+                if (event == Lifecycle.Event.ON_PAUSE) {
+                    GeoService.setForeground(getApplicationContext());
+                }
+            }
+        });
 
 
         mMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mainMapFragment);
