@@ -67,11 +67,6 @@ public class GeoService extends GeomobyUserService {
     }
 
     @Override
-    public void newDistanse(@NotNull String distance, boolean inside) {
-        GeoMobyManager.getInstance().distanceChanged(distance, inside);
-    }
-
-    @Override
     public void newFenceList(@NotNull ArrayList<GeomobyFenceView> fences) {
         GeoMobyManager.getInstance().fenceListChanged(fences);
     }
@@ -110,4 +105,8 @@ public class GeoService extends GeomobyUserService {
         ContextCompat.startForegroundService(context, intent);
     }
 
+    @Override
+    public void newDistance(@NotNull String distance, boolean inside) {
+        GeoMobyManager.getInstance().distanceChanged(distance, inside);
+    }
 }
