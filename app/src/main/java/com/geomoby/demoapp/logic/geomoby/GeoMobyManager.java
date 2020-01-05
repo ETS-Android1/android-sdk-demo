@@ -34,9 +34,6 @@ public class GeoMobyManager implements GeomobyServiceCallback {
                 .setDevMode(true)
                 .setUUID("30cab38c-6921-43f4-b005-24af1e070ff2")
                 .setSilenceWindow(23,5)
-                .setForeground(GeoMobyApplication.getContext().getResources().getString(R.string.app_name),
-                        "This notification shows that application is working", R.mipmap.ic_launcher)
-                .forceForeground(true)
                 .build();
     }
 
