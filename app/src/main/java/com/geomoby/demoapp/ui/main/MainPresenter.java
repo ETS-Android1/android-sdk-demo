@@ -94,7 +94,7 @@ public class MainPresenter extends MvpPresenter<MainView> implements GeoMobyMana
     }
 
     private void startGeoMobyManager() {
-        GeoMobyManager.getInstance().start();
+        //GeoMobyManager.getInstance().start();
         GeoMobyManager.getInstance().setDelegate(this);
     }
 

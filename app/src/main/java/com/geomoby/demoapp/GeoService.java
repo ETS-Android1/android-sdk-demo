@@ -6,9 +6,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.core.content.ContextCompat;
 
+import com.geomoby.GeoMoby;
 import com.geomoby.GeomobyUserService;
 import com.geomoby.classes.GeomobyActionBasic;
 import com.geomoby.classes.GeomobyActionData;
@@ -36,8 +38,14 @@ public class GeoService extends GeomobyUserService {
     }
 
     @Override
-    public void onDestroy() {
+    public void onCreate() {
+        super.onCreate();
+        GeoMobyManager.getInstance().start();
+    }
 
+    @Override
+    public void onDestroy() {
+        GeoMoby.stop();
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             Intent restartService = new Intent(getApplicationContext(), this.getClass());
             PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), 1, restartService, PendingIntent.FLAG_ONE_SHOT);
