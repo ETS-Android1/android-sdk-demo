@@ -5,8 +5,9 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
+
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 
 import com.geomoby.demoapp.GeoMobyApplication;
 import com.google.android.gms.common.ConnectionResult;
@@ -24,7 +25,10 @@ public class LocationManager extends LocationCallback implements GoogleApiClient
     private static LocationManager mInstance = null;
 
     private LocationManagerCallback mDelegate = null;
-    private GoogleApiClient mGoogleApiClient;
+    /**
+     * Google API client
+     */
+    private final ThreadLocal<GoogleApiClient> mGoogleApiClient = new ThreadLocal<GoogleApiClient>();
 
 
     public static LocationManager getInstance() {
@@ -35,12 +39,12 @@ public class LocationManager extends LocationCallback implements GoogleApiClient
     }
 
     private LocationManager() {
-        mGoogleApiClient = new GoogleApiClient.Builder(GeoMobyApplication.getContext())
+        mGoogleApiClient.set(new GoogleApiClient.Builder(GeoMobyApplication.getContext())
                 .addApi(LocationServices.API)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
-                .build();
-        mGoogleApiClient.connect();
+                .build());
+        mGoogleApiClient.get().connect();
     }
 
     public void setDelegate(LocationManagerCallback delegate) {
@@ -68,12 +72,12 @@ public class LocationManager extends LocationCallback implements GoogleApiClient
 
     @Override
     public void onConnectionSuspended(int i) {
-        mGoogleApiClient.connect();
+        mGoogleApiClient.get().connect();
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        mGoogleApiClient.connect();
+        mGoogleApiClient.get().connect();
     }
 
     @Override

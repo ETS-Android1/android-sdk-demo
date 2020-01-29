@@ -1,8 +1,10 @@
 package com.geomoby.demoapp.ui.splash;
 
-import android.support.v7.app.AppCompatActivity;
+
 import android.os.Bundle;
 import android.view.View;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.geomoby.demoapp.R;
 import com.geomoby.demoapp.ui.main.MainActivity;

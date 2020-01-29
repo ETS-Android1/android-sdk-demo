@@ -1,6 +1,7 @@
 package com.geomoby.demoapp.ui.main;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -8,21 +9,25 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.design.widget.NavigationView;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.arellomobile.mvp.MvpAppCompatActivity;
-import com.arellomobile.mvp.presenter.InjectPresenter;
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleEventObserver;
+import androidx.lifecycle.LifecycleOwner;
+
 import com.geomoby.classes.GeomobyFenceView;
 import com.geomoby.classes.GeomobyGeometryItem;
+import com.geomoby.demoapp.GeoService;
 import com.geomoby.demoapp.R;
 import com.geomoby.demoapp.ui.settings.SettingsActivity;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -35,9 +40,14 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.material.navigation.NavigationView;
+import com.karumi.dexter.PermissionToken;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import moxy.MvpAppCompatActivity;
+import moxy.presenter.InjectPresenter;
 
 public class MainActivity extends MvpAppCompatActivity implements MainView, NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
 
@@ -58,13 +68,30 @@ public class MainActivity extends MvpAppCompatActivity implements MainView, Navi
     private TextView mMainBeaconText;
     private View mMainProgress;
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mainMapFragment);
+        Intent serviceIntent = new Intent(this, GeoService.class);
+        ContextCompat.startForegroundService(this, serviceIntent);
 
+        getLifecycle().addObserver(new LifecycleEventObserver() {
+            @Override
+            public void onStateChanged(@NonNull LifecycleOwner source, @NonNull Lifecycle.Event event) {
+                if (event == Lifecycle.Event.ON_RESUME) {
+                    GeoService.disableForeground(getApplicationContext());
+                }
+
+                if (event == Lifecycle.Event.ON_PAUSE) {
+                    GeoService.setForeground(getApplicationContext());
+                }
+            }
+        });
+
+
+        mMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mainMapFragment);
         mDrawer = findViewById(R.id.mainDrawerLayout);
 
         NavigationView navigationView = findViewById(R.id.mainNavigationView);
@@ -83,12 +110,14 @@ public class MainActivity extends MvpAppCompatActivity implements MainView, Navi
         mMainLocationText = findViewById(R.id.mainLocationText);
         mMainBeaconText = findViewById(R.id.mainBeaconText);
         mMainProgress = findViewById(R.id.mainProgress);
+
+
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        mMainPresenter.activityStarted();
+        mMainPresenter.activityStarted(this);
     }
 
     @Override
@@ -107,9 +136,35 @@ public class MainActivity extends MvpAppCompatActivity implements MainView, Navi
     }
 
     @Override
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+    public void showPermissionRationale(final PermissionToken token) {
+        new AlertDialog.Builder(this).setTitle(R.string.permission_rationale_title)
+                .setMessage(R.string.permission_rationale_message)
+                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        token.cancelPermissionRequest();
+                    }
+                })
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        token.continuePermissionRequest();
+                    }
+                })
+                .setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override public void onDismiss(DialogInterface dialog) {
+                        token.cancelPermissionRequest();
+                    }
+                })
+                .show();
+    }
+
+    /*@Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         mMainPresenter.handlePermissionResult(requestCode, permissions, grantResults);
     }
+
 
     @Override
     public void onCheckPermissionRationale(final String permission, int requestCode) {
@@ -138,7 +193,7 @@ public class MainActivity extends MvpAppCompatActivity implements MainView, Navi
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             requestPermissions(permissions, requestCode);
         }
-    }
+    }*/
 
     @Override
     public void onShowProgress(boolean show) {
@@ -302,9 +357,9 @@ public class MainActivity extends MvpAppCompatActivity implements MainView, Navi
         mMap = googleMap;
         mMap.getUiSettings().setCompassEnabled(false);
         mMap.getUiSettings().setMyLocationButtonEnabled(false);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        //if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mMap.setMyLocationEnabled(true);
-        }
+        //}
         mMainPresenter.mapReady();
     }
 }

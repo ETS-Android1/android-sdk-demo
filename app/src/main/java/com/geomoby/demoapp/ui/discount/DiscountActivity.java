@@ -6,10 +6,12 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.arellomobile.mvp.MvpAppCompatActivity;
-import com.arellomobile.mvp.presenter.InjectPresenter;
+
 import com.geomoby.demoapp.R;
 import com.geomoby.demoapp.ui.main.MainActivity;
+
+import moxy.MvpAppCompatActivity;
+import moxy.presenter.InjectPresenter;
 
 public class DiscountActivity extends MvpAppCompatActivity implements DiscountView {
 
@@ -38,11 +40,6 @@ public class DiscountActivity extends MvpAppCompatActivity implements DiscountVi
         });
 
         mDiscountPresenter.activityCreated(getIntent());
-    }
-
-    @Override
-    public void onBackPressed() {
-        mDiscountPresenter.finishActivity();
     }
 
     @Override

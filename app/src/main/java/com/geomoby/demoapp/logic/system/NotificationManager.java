@@ -8,19 +8,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.RequiresApi;
+
+import androidx.annotation.DrawableRes;
+import androidx.annotation.RequiresApi;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-@RequiresApi(api = Build.VERSION_CODES.N)
 public class NotificationManager {
     private static final String NOTIFICATION_CHANNEL_ID = "GeoMobyNotificationChannelID";
     private static final String NOTIFICATION_CHANNEL_NAME = "GeoMobyNotificationChannelName";
     private static final int NOTIFICATION_IMPRTANCE = android.app.NotificationManager.IMPORTANCE_HIGH;
 
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public static void sendNotification(Context context, Intent intent, String title, String body, @DrawableRes int icon) {
 
         TaskStackBuilder stackBuilder = TaskStackBuilder
@@ -30,14 +29,17 @@ public class NotificationManager {
         PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Notification.Builder notificationBuilder = new Notification.Builder(context)
-                .setSmallIcon(icon)
-                .setContentTitle(title)
-                .setContentText(body)
-                .setTicker(title)
-                .setWhen(System.currentTimeMillis())
-                .setAutoCancel(true)
-                .setContentIntent(pendingIntent)
-                .setChannelId(NOTIFICATION_CHANNEL_ID);
+                    .setSmallIcon(icon)
+                    .setContentTitle(title)
+                    .setContentText(body)
+                    .setTicker(title)
+                    .setWhen(System.currentTimeMillis())
+                    .setAutoCancel(true)
+                    .setContentIntent(pendingIntent);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            notificationBuilder.setChannelId(NOTIFICATION_CHANNEL_ID);
+        }
 
         android.app.NotificationManager notificationManager = (android.app.NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -59,7 +61,7 @@ public class NotificationManager {
 
     // Use this class to generate unique notification ID
     private static class NotificationID {
-        private static final AtomicInteger c = new AtomicInteger(0);
+        private static final AtomicInteger c = new AtomicInteger(2);
         static int getID() {
             return c.incrementAndGet();
         }

@@ -7,6 +7,8 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import org.jetbrains.annotations.NotNull;
+
 public class FirebaseManager extends FirebaseMessagingService {
     private static final String TAG = FirebaseManager.class.getSimpleName();
 
@@ -16,7 +18,7 @@ public class FirebaseManager extends FirebaseMessagingService {
     }
 
     @Override
-    public void onMessageReceived(RemoteMessage remoteMessage) {
+    public void onMessageReceived(@NotNull RemoteMessage remoteMessage) {
 
         Log.d(TAG, "From: " + remoteMessage.getFrom());
 
@@ -43,7 +45,7 @@ public class FirebaseManager extends FirebaseMessagingService {
     }
 
     @Override
-    public void onNewToken(String token) {
+    public void onNewToken(@NotNull String token) {
         super.onNewToken(token);
 
         Log.d(TAG, "Token:  " + token);

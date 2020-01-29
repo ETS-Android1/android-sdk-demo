@@ -1,9 +1,8 @@
 package com.geomoby.demoapp;
 
 import android.content.Context;
-import android.support.multidex.MultiDexApplication;
 
-import com.crashlytics.android.Crashlytics;
+import androidx.multidex.MultiDexApplication;
 
 public class GeoMobyApplication extends MultiDexApplication {
 
@@ -13,6 +12,7 @@ public class GeoMobyApplication extends MultiDexApplication {
     public void onCreate() {
         super.onCreate();
         mContext = getApplicationContext();
+
     }
 
     public static Context getContext() {
