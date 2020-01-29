@@ -9,8 +9,6 @@ import android.util.Log;
 
 import androidx.core.content.ContextCompat;
 
-import moxy.InjectViewState;
-import moxy.MvpPresenter;
 import com.geomoby.classes.GeomobyFenceView;
 import com.geomoby.demoapp.GeoMobyApplication;
 import com.geomoby.demoapp.logic.geomoby.GeoMobyManager;
@@ -26,6 +24,9 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import moxy.InjectViewState;
+import moxy.MvpPresenter;
 
 @InjectViewState
 public class MainPresenter extends MvpPresenter<MainView> implements GeoMobyManager.GeoMobyManagerCallback, LocationManager.LocationManagerCallback {
@@ -88,7 +89,11 @@ public class MainPresenter extends MvpPresenter<MainView> implements GeoMobyMana
     }
 
     private void requestPermission(final String permission, int requestCode) {
-        getViewState().onRequestForPermissions(new String[]{permission}, requestCode);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            getViewState().onRequestForPermissions(new String[]{permission, Manifest.permission.ACCESS_BACKGROUND_LOCATION, Manifest.permission.ACTIVITY_RECOGNITION}, requestCode);
+        } else {
+            getViewState().onRequestForPermissions(new String[]{permission}, requestCode);
+        }
     }
 
     public void handlePermissionResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -121,7 +126,7 @@ public class MainPresenter extends MvpPresenter<MainView> implements GeoMobyMana
     }
 
     private void startGeoMobyManager() {
-        GeoMobyManager.getInstance().start();
+        //GeoMobyManager.getInstance().start();
         GeoMobyManager.getInstance().setDelegate(this);
     }
 

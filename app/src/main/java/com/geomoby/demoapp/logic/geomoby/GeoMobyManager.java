@@ -34,9 +34,6 @@ public class GeoMobyManager implements GeomobyServiceCallback {
                 .setDevMode(true)
                 .setUUID("30cab38c-6921-43f4-b005-24af1e070ff2")
                 .setSilenceWindow(23,5)
-                .setForeground(GeoMobyApplication.getContext().getResources().getString(R.string.app_name),
-                        "This notification shows that application is working", R.mipmap.ic_launcher)
-                .forceForeground(true)
                 .build();
     }
 
@@ -81,25 +78,25 @@ public class GeoMobyManager implements GeomobyServiceCallback {
         GeoMoby.updateInstanceId(firebaseId);
     }
 
-    void initLocationChanged(Location location) {
+    public void initLocationChanged(Location location) {
         if (mDelegate != null) {
             mDelegate.onInitLocationChanged(location);
         }
     }
 
-    void distanceChanged(String distance, boolean inside) {
+    public void distanceChanged(String distance, boolean inside) {
         if (mDelegate != null) {
             mDelegate.onDistanceChanged(distance, inside);
         }
     }
 
-    void beaconScanChanged(boolean scanning) {
+    public void beaconScanChanged(boolean scanning) {
         if (mDelegate != null) {
             mDelegate.onBeaconScanChanged(scanning);
         }
     }
 
-    void fenceListChanged(ArrayList<GeomobyFenceView> fences) {
+    public void fenceListChanged(ArrayList<GeomobyFenceView> fences) {
         if (mDelegate != null) {
             mDelegate.onFenceListChanged(fences);
         }

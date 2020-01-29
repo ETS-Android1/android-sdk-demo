@@ -61,7 +61,7 @@ public class NotificationManager {
 
     // Use this class to generate unique notification ID
     private static class NotificationID {
-        private static final AtomicInteger c = new AtomicInteger(0);
+        private static final AtomicInteger c = new AtomicInteger(2);
         static int getID() {
             return c.incrementAndGet();
         }

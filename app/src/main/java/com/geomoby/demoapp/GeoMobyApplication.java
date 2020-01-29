@@ -12,6 +12,7 @@ public class GeoMobyApplication extends MultiDexApplication {
     public void onCreate() {
         super.onCreate();
         mContext = getApplicationContext();
+
     }
 
     public static Context getContext() {
