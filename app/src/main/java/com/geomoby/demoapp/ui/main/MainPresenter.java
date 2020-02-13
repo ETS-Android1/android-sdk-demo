@@ -69,6 +69,7 @@ public class MainPresenter extends MvpPresenter<MainView> implements GeoMobyMana
             case LOCATION_PERMISSION_RESPONSE: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     getViewState().onStartMap();
+                    GeoMobyManager.getInstance().updateFences();
                 }
             }
         }
