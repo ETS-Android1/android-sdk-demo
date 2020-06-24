@@ -68,7 +68,7 @@ public class MainPresenter extends MvpPresenter<MainView> implements GeoMobyMana
     public void activityDestroyed() {
         GeoMobyManager.getInstance().updateFences();
     }
-    
+
     public void mapReady() {
 
         int mapMode = SettingsManager.getInstance().getMapMode();
