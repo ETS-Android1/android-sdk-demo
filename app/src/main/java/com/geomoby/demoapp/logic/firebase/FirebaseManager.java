@@ -13,7 +13,7 @@ public class FirebaseManager extends FirebaseMessagingService {
     private static final String TAG = FirebaseManager.class.getSimpleName();
 
     public static void initFirebase() {
-        // Subsribe to topic
+        // Subscribe to topic
         FirebaseMessaging.getInstance().subscribeToTopic("GeomobySync");
     }
 
