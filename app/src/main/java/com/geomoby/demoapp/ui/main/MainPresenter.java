@@ -44,6 +44,7 @@ public class MainPresenter extends MvpPresenter<MainView> implements GeoMobyMana
                         public void onPermissionsChecked(MultiplePermissionsReport report) {
                             Log.e("Dexter", "Permissions Granted!");
                             getViewState().onStartMap();
+                            GeoMobyManager.getInstance().updateFences();
                         }
 
                         @Override
@@ -60,51 +61,13 @@ public class MainPresenter extends MvpPresenter<MainView> implements GeoMobyMana
 
         } else {
             getViewState().onStartMap();
+            GeoMobyManager.getInstance().updateFences();
         }
     }
 
     public void activityDestroyed() {
         GeoMobyManager.getInstance().updateFences();
     }
-
-   /* private void checkPermission(final String permission, int requestCode) {
-        
-        if (ContextCompat.checkSelfPermission(GeoMobyApplication.getContext(), permission) != PackageManager.PERMISSION_GRANTED) {
-            getViewState().onCheckPermissionRationale(permission, requestCode);
-        } else {
-            getViewState().onStartMap();
-        }
-    }
-
-    public void handlePermissionRationale(final String permission, int requestCode, boolean result) {
-        if (!result) {
-            getViewState().onShowRationaleDialog(permission, requestCode, "You need to allow access to your location");
-        } else {
-            requestPermission(permission, requestCode);
-        }
-    }
-
-    public void rationaleClosed(final String permission, int requestCode) {
-        requestPermission(permission, requestCode);
-    }
-
-    private void requestPermission(final String permission, int requestCode) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            getViewState().onRequestForPermissions(new String[]{permission, Manifest.permission.ACCESS_BACKGROUND_LOCATION, Manifest.permission.ACTIVITY_RECOGNITION}, requestCode);
-        } else {
-            getViewState().onRequestForPermissions(new String[]{permission}, requestCode);
-        }
-    }
-
-    public void handlePermissionResult(int requestCode, String[] permissions, int[] grantResults) {
-        switch (requestCode) {
-            case LOCATION_PERMISSION_RESPONSE: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    getViewState().onStartMap();
-                }
-            }
-        }
-    }*/
 
     public void mapReady() {
 
