@@ -94,6 +94,12 @@ public class GeoService extends GeomobyUserService {
 
     @Override
     public void newFenceList(@NotNull ArrayList<GeomobyFenceView> fences) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Geofences list: \n");
+        for(GeomobyFenceView fence: fences){
+            builder.append("\t - name: "+fence.getName()+" type: "+fence.getType()+" geometries: "+fence.getGeometries()+"\n");
+        }
+        Log.d("GeoService","New Fences - "+builder.toString());
         GeoMobyManager.getInstance().fenceListChanged(fences);
     }
 

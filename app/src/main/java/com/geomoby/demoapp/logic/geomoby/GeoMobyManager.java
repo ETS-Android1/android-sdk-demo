@@ -34,15 +34,16 @@ public class GeoMobyManager implements GeomobyServiceCallback {
         // Build geomoby. build() method returns Geomoby object
         new GeoMoby.Builder(GeoMobyApplication.getContext(), "46WKUL6S", this)
                 .setDevMode(true)
+                .setOfflineMode(true)
                 .setUUID("30cab38c-6921-43f4-b005-24af1e070ff2")
                 .setSilenceWindow(23,5)
                 .build();
 
-        Map<String, String> tags = new HashMap<>();
+        /*Map<String, String> tags = new HashMap<>();
         tags.put("gender", "male");
         tags.put("age", "27");
         tags.put("membership", "gold");
-        GeoMoby.setTags(tags);
+        GeoMoby.setTags(tags);*/
     }
 
     public void setDelegate(GeoMobyManagerCallback delegate) {
