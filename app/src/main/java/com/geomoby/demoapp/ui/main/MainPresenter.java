@@ -117,8 +117,8 @@ public class MainPresenter extends MvpPresenter<MainView> implements GeoMobyMana
 
     @Override
     public void onDistanceChanged(String distance, boolean inside) {
-        String result = inside ? "-" + distance : distance;
-        getViewState().onDistanceChanged(result);
+        //String result = inside ? "-" + distance : distance;
+        getViewState().onDistanceChanged(distance);
     }
 
     @Override
