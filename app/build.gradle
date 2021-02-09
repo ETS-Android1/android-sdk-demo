@@ -61,9 +61,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging:20.2.1'
     implementation 'com.google.firebase:firebase-crashlytics:17.1.0'
 
-    //implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
-
-    implementation files('libs/geomoby-android-v2.7.10.09.jar')
+    implementation files('libs/geomoby-v2-debug.jar')
 
     implementation 'gr.pantrif:easy-android-splash-screen:0.0.1'
     
