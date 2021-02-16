@@ -122,7 +122,7 @@ public class GeoService extends GeomobyUserService {
     @NotNull
     @Override
     public String getNotificationTitle() {
-        return "Geomoby demo app";
+        return "GeoMoby service is running";
     }
 
     public static void setForeground(Context context) {
