@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class NotificationManager {
     private static final String NOTIFICATION_CHANNEL_ID = "GeoMobyNotificationChannelID";
-    private static final String NOTIFICATION_CHANNEL_NAME = "GeoMobyNotificationChannelName";
+    private static final String NOTIFICATION_CHANNEL_NAME = "GM Notification Manager";
     private static final int NOTIFICATION_IMPRTANCE = android.app.NotificationManager.IMPORTANCE_HIGH;
 
 

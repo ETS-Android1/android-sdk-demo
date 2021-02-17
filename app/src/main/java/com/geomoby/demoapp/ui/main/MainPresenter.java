@@ -37,8 +37,20 @@ public class MainPresenter extends MvpPresenter<MainView> implements GeoMobyMana
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             //checkPermission(Manifest.permission.ACCESS_FINE_LOCATION, LOCATION_PERMISSION_RESPONSE);
 
+            String[] permissions;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                permissions = new String[]{
+                        Manifest.permission.ACCESS_COARSE_LOCATION,
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_BACKGROUND_LOCATION};
+            } else {
+                permissions = new String[]{
+                        Manifest.permission.ACCESS_COARSE_LOCATION,
+                        Manifest.permission.ACCESS_FINE_LOCATION};
+            }
+
             Dexter.withActivity(activity)
-                    .withPermissions(Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION)
+                    .withPermissions(permissions)
                     .withListener(new MultiplePermissionsListener() {
                         @Override
                         public void onPermissionsChecked(MultiplePermissionsReport report) {
@@ -105,8 +117,8 @@ public class MainPresenter extends MvpPresenter<MainView> implements GeoMobyMana
 
     @Override
     public void onDistanceChanged(String distance, boolean inside) {
-        String result = inside ? "-" + distance : distance;
-        getViewState().onDistanceChanged(result);
+        //String result = inside ? "-" + distance : distance;
+        getViewState().onDistanceChanged(distance);
     }
 
     @Override

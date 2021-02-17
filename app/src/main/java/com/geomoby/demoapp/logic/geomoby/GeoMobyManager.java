@@ -35,6 +35,7 @@ public class GeoMobyManager implements GeomobyServiceCallback {
         new GeoMoby.Builder(GeoMobyApplication.getContext(), "46WKUL6S", this)
                 .setDevMode(true)
                 .setUUID("f7826da6-4fa2-4e98-8024-bc5b71e0893e")
+                .setOfflineMode(true)
                 .setSilenceWindow(23,5)
                 .build();
 
