@@ -45,7 +45,7 @@ public class GeoService extends GeomobyUserService {
 
     @Override
     public void onDestroy() {
-        GeoMoby.stop();
+        GeoMoby.Companion.stop();
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             Intent restartService = new Intent(getApplicationContext(), this.getClass());
             PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), 1, restartService, PendingIntent.FLAG_ONE_SHOT);
@@ -86,15 +86,34 @@ public class GeoService extends GeomobyUserService {
                     title = "Today's Special offer";
                     icon = R.mipmap.offer;
                     break;
+                case "enter_geo":
+                    String fencesEnter = geomobyActionData.getValue("fences");
+                    title = "Enter geo "+fencesEnter;
+                    icon = R.mipmap.hotel;
+                    break;
+                case "exit_geo":
+                    String fencesExit = geomobyActionData.getValue("fences");
+                    title = "Exit geo "+fencesExit;
+                    icon = R.mipmap.good_bye;
+                    break;
+                case "dwell_geo":
+                    title = "Dwell geo";
+                    icon = R.mipmap.drink;
+                    break;
             }
 
             NotificationManager.sendNotification(this, openIntent, title, title, icon);
+        } else {
+            NotificationManager.sendNotification(this, null, "aaaaa", "bbbbb",
+                    R.mipmap.offer);
+
         }
     }
 
     @Override
     public void newFenceList(@NotNull ArrayList<GeomobyFenceView> fences) {
         StringBuilder builder = new StringBuilder();
+
         builder.append("Geofences list: \n");
         for(GeomobyFenceView fence: fences){
             builder.append("\t - name: "+fence.getName()+" type: "+fence.getType()+" geometries: "+fence.getGeometries()+"\n");

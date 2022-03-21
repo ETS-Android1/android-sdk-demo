@@ -42,9 +42,11 @@ import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.material.navigation.NavigationView;
 import com.karumi.dexter.PermissionToken;
+import com.vividsolutions.jts.geom.Geometry;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import moxy.MvpAppCompatActivity;
 import moxy.presenter.InjectPresenter;
@@ -258,7 +260,7 @@ public class MainActivity extends MvpAppCompatActivity implements MainView, Navi
         mMap.clear();
 
         for (GeomobyFenceView fence : fences) {
-            switch (fence.getType()) {
+            switch (fence.getType().toLowerCase(Locale.ROOT)) {
                 case "polygon":
                     addPolygon(fence);
                     break;
@@ -280,7 +282,6 @@ public class MainActivity extends MvpAppCompatActivity implements MainView, Navi
 
         for (GeomobyGeometryItem geomerty : geometries) {
             List<Location> points = geomerty.getPoints();
-
             PolygonOptions polygonOptions = new PolygonOptions();
             for (Location point : points) {
                 polygonOptions.add(new LatLng(point.getLatitude(), point.getLongitude()));
@@ -289,6 +290,14 @@ public class MainActivity extends MvpAppCompatActivity implements MainView, Navi
             polygonOptions.strokeColor(mBorderColor);
             polygonOptions.strokeWidth(mStrokeWidth);
             mMap.addPolygon(polygonOptions);
+
+            CircleOptions circleOptionsGeo = new CircleOptions();
+            circleOptionsGeo.center(new LatLng(geomerty.getCenterPointY(), geomerty.getCenterPointX()));
+            circleOptionsGeo.radius(geomerty.getFenceRadius());
+            circleOptionsGeo.fillColor(mBeaconFillColor);
+            circleOptionsGeo.strokeColor(mBeaconBorderColor);
+            circleOptionsGeo.strokeWidth(mStrokeWidth);
+            mMap.addCircle(circleOptionsGeo);
         }
     }
 
@@ -302,6 +311,14 @@ public class MainActivity extends MvpAppCompatActivity implements MainView, Navi
         circleOptions.strokeColor(mBorderColor);
         circleOptions.strokeWidth(mStrokeWidth);
         mMap.addCircle(circleOptions);
+
+        CircleOptions circleOptionsGeo = new CircleOptions();
+        circleOptionsGeo.center(new LatLng(point.getLatitude(), point.getLongitude()));
+        circleOptionsGeo.radius(fence.getRadius()+300);
+        circleOptionsGeo.fillColor(mBeaconFillColor);
+        circleOptionsGeo.strokeColor(mBeaconBorderColor);
+        circleOptionsGeo.strokeWidth(mStrokeWidth);
+        mMap.addCircle(circleOptionsGeo);
     }
 
     private void addBeacon(GeomobyFenceView fence) {
