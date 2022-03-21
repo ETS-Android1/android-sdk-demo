@@ -83,9 +83,15 @@
             android:permission="android.permission.BIND_JOB_SERVICE"
             android:exported="true"/>
 
-        <receiver android:name="com.geomoby.managers.GeomobyGPSManager" />
+        <receiver android:name="com.geomoby.receiver.GeomobyGPSManager" />
+        <receiver android:name="com.geomoby.receiver.GeofenceBroadcastReceiver" />
+        <service
+            android:name="com.geomoby.GeofenceTransitionsJobIntentService"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+        
         <receiver
-            android:name="com.geomoby.managers.GeomobyBootManager"
+            android:name="com.geomoby.receiver.GeomobyBootManager"
             android:enabled="true"
             android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
             <intent-filter>
@@ -101,7 +107,6 @@
             </intent-filter>
         </receiver>
         <!-- ****** END: GeoMoby Services & Receivers ******* -->
-
     </application>
 
 </manifest>

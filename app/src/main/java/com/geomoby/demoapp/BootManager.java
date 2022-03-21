@@ -5,11 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import androidx.core.content.ContextCompat;
-import androidx.work.ExistingWorkPolicy;
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.WorkManager;
 
-import com.geomoby.services.GeomobyService;
 
 public class BootManager extends BroadcastReceiver {
     public BootManager() {
