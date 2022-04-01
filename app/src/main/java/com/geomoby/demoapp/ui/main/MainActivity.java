@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -69,6 +70,8 @@ public class MainActivity extends MvpAppCompatActivity implements MainView, Navi
     private TextView mMainLocationText;
     private TextView mMainBeaconText;
     private View mMainProgress;
+
+    private LatLng initLocation;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -231,6 +234,7 @@ public class MainActivity extends MvpAppCompatActivity implements MainView, Navi
         if (mMap != null) {
             LatLng latlong = new LatLng(latitude, longitude);
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latlong, 14.0f));
+            initLocation = latlong;
         }
     }
 
@@ -242,6 +246,7 @@ public class MainActivity extends MvpAppCompatActivity implements MainView, Navi
 
     @Override
     public void onDistanceChanged(String distance) {
+        Log.d("API","distance changed ui - "+distance);
         String result = distance + "M";
         mMainTextNearestMeters.setText(result);
     }
@@ -258,6 +263,9 @@ public class MainActivity extends MvpAppCompatActivity implements MainView, Navi
     @Override
     public void onFenceListChanged(ArrayList<GeomobyFenceView> fences) {
         mMap.clear();
+        mMap.addMarker(new MarkerOptions()
+                .position(initLocation)
+                .title("Init location"));
 
         for (GeomobyFenceView fence : fences) {
             switch (fence.getType().toLowerCase(Locale.ROOT)) {
@@ -339,10 +347,20 @@ public class MainActivity extends MvpAppCompatActivity implements MainView, Navi
     }
 
     private void addLine(GeomobyFenceView fence) {
-        List<Location> points = fence.getGeometries().get(0).getPoints();
+        GeomobyGeometryItem line = fence.getGeometries().get(0);
+        List<Location> points = line.getPoints();
 
         PolylineOptions lineOptions = new PolylineOptions();
         for (Location point : points) {
+
+            CircleOptions circleOptionsGeo = new CircleOptions();
+            circleOptionsGeo.center(new LatLng(point.getLatitude(), point.getLongitude()));
+            circleOptionsGeo.radius(300f);
+            circleOptionsGeo.fillColor(mBeaconFillColor);
+            circleOptionsGeo.strokeColor(mBeaconBorderColor);
+            circleOptionsGeo.strokeWidth(mStrokeWidth);
+            mMap.addCircle(circleOptionsGeo);
+
             lineOptions.add(new LatLng(point.getLatitude(), point.getLongitude()));
         }
         lineOptions.color(mBorderColor);
