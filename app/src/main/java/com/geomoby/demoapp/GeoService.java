@@ -45,7 +45,8 @@ public class GeoService extends GeomobyUserService {
 
     @Override
     public void onDestroy() {
-        GeoMoby.Companion.stop();
+        Log.d("API","Destroy Service");
+        //GeoMoby.Companion.stop();
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             Intent restartService = new Intent(getApplicationContext(), this.getClass());
             PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), 1, restartService, PendingIntent.FLAG_ONE_SHOT);

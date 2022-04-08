@@ -128,7 +128,8 @@ public class MainActivity extends MvpAppCompatActivity implements MainView, Navi
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mMainPresenter.activityDestroyed();
+        Log.d("API","Destroy Activity");
+        //mMainPresenter.activityDestroyed();
     }
 
     @Override
@@ -246,9 +247,15 @@ public class MainActivity extends MvpAppCompatActivity implements MainView, Navi
 
     @Override
     public void onDistanceChanged(String distance) {
-        Log.d("API","distance changed ui - "+distance);
-        String result = distance + "M";
-        mMainTextNearestMeters.setText(result);
+        //TODO Move to SDK
+        try{
+            float distanceFloat = Float.parseFloat(distance);
+            Log.d("API","distance changed ui - "+distanceFloat);
+            String result = Math.round(distanceFloat) + "M";
+            mMainTextNearestMeters.setText(result);
+        } catch (Exception ex){
+            ex.printStackTrace();
+        }
     }
 
     @Override
