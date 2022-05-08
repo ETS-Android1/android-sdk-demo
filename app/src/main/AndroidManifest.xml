@@ -18,7 +18,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
     <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION" />
-    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION"/>
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 
     <uses-feature
@@ -33,6 +33,9 @@
         android:networkSecurityConfig="@xml/network_security_config"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity
+            android:name=".ui.fence_history.FenceHistoryActivity"
+            android:exported="true" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -44,7 +47,8 @@
 
         <activity
             android:name=".ui.splash.SplashActivity"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -52,61 +56,90 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.main.MainActivity"
+            android:name=".ui.main.MainActivityNew"
             android:launchMode="singleInstance"
+            android:exported="true"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.discount.DiscountActivity"
+            android:name=".ui.discount.DiscountActivityNew"
+            android:exported="true"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.settings.SettingsActivity"
+            android:name=".ui.settings.SettingsActivityNew"
+            android:exported="true"
             android:screenOrientation="portrait" />
 
         <!-- ****** START: Firebase Service ******* -->
-        <service android:name=".logic.firebase.FirebaseManager">
+        <service android:name=".logic.firebase.FirebaseManager"
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
-        </service>
-        <!-- ****** END: Firebase Service ******* -->
-
+        </service> <!-- ****** END: Firebase Service ******* -->
         <!-- ****** START: GeoMoby Services & Receivers ******* -->
         <service
             android:name=".GeoService"
             android:enabled="true"
-            android:foregroundServiceType="location"
-            android:exported="true"/>
+            android:exported="true"
+            android:foregroundServiceType="location" />
+        <service android:name="com.geomoby.managers.GeomobyBeaconManager"
+            android:exported="true" />
+        <service
+            android:name="com.geomoby.managers.job.GpsManagerSchedulerService"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
 
-        <service android:name="com.geomoby.managers.GeomobyBeaconManager" />
+        <receiver android:name="com.geomoby.receiver.GeomobyGPSManager"
+            android:exported="true" />
+        <receiver android:name="com.geomoby.receiver.GeofenceBroadcastReceiver"
+            android:exported="true" />
 
-        <service android:name="com.geomoby.managers.job.GpsManagerSchedulerService"
-            android:permission="android.permission.BIND_JOB_SERVICE"
-            android:exported="true"/>
-
-        <receiver android:name="com.geomoby.receiver.GeomobyGPSManager" />
-        <receiver android:name="com.geomoby.receiver.GeofenceBroadcastReceiver" />
         <service
             android:name="com.geomoby.GeofenceTransitionsJobIntentService"
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
-        
+
         <receiver
             android:name="com.geomoby.receiver.GeomobyBootManager"
             android:enabled="true"
-            android:permission="android.permission.RECEIVE_BOOT_COMPLETED">
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".BootManager">
+        <receiver android:name=".BootManager"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.QUICKBOOT_POWERON" />
             </intent-filter>
-        </receiver>
-        <!-- ****** END: GeoMoby Services & Receivers ******* -->
+        </receiver> <!-- ****** END: GeoMoby Services & Receivers ******* -->
+        <service
+            android:name="com.geomoby.core.presentation.services.background_location.GPSJobService"
+            android:foregroundServiceType="location"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <receiver android:name="com.geomoby.core.presentation.services.GPSServiceWakeUpper"
+            android:exported="true" />
+
+        <service
+            android:name="com.geomoby.core.presentation.services.background_location.GPSClassicService"
+            android:exported="false"
+            android:foregroundServiceType="location" />
+
+        <receiver android:name="com.geomoby.core.presentation.services.geomoby_service.UpdateInitLocationReceiver"
+            android:exported="true" />
+
+        <service
+            android:name="com.geomoby.core.presentation.services.background_location.GetInitLocationService"
+            android:foregroundServiceType="location"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
     </application>
 
 </manifest>

@@ -1,20 +1,15 @@
-package com.geomoby.demoapp;
+package com.geomoby.demoapp
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import com.geomoby.demoapp.GeoService
 
-import androidx.core.content.ContextCompat;
-
-
-public class BootManager extends BroadcastReceiver {
-    public BootManager() {
-    }
-
-    @Override
-    public void onReceive(Context context, Intent intent) {
+class BootManager : BroadcastReceiver() {
+    override fun onReceive(context: Context, intent: Intent) {
         // Starting service when boot up
-        Intent serviceIntent = new Intent(context, GeoService.class);
-        ContextCompat.startForegroundService(context, serviceIntent);
+        val serviceIntent = Intent(context, GeoService::class.java)
+        //ContextCompat.startForegroundService(context, serviceIntent);
+        context.startService(serviceIntent)
     }
 }

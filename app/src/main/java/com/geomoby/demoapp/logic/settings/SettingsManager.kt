@@ -1,29 +1,30 @@
-package com.geomoby.demoapp.logic.settings;
+package com.geomoby.demoapp.logic.settings
 
-import com.geomoby.demoapp.GeoMobyApplication;
-import com.geomoby.demoapp.data.SharedPreferences;
+import com.geomoby.demoapp.data.SharedPreferences.setMapMode
+import com.geomoby.demoapp.data.SharedPreferences.getMapMode
+import com.geomoby.demoapp.GeoMobyApplication
 
-public class SettingsManager {
-    public static final int MAP_MODE_STANDARD = 0;
-    public static final int MAP_MODE_HYBRID = 1;
-    public static final int MAP_MODE_SATELLITE = 2;
+class SettingsManager private constructor() {
 
-    private static SettingsManager mInstance = null;
-
-    public static SettingsManager getInstance() {
-        if (mInstance == null) {
-            mInstance = new SettingsManager();
+    var mapMode: Int
+        get() = getMapMode(GeoMobyApplication.context!!)
+        set(mapMode) {
+            setMapMode(GeoMobyApplication.context!!, mapMode)
         }
-        return mInstance;
-    }
 
-    private SettingsManager() {}
+    companion object {
+        const val MAP_MODE_STANDARD = 0
+        const val MAP_MODE_HYBRID = 1
+        const val MAP_MODE_SATELLITE = 2
+        private var mInstance: SettingsManager? = null
 
-    public void setMapMode(int mapMode) {
-        SharedPreferences.setMapMode(GeoMobyApplication.getContext(), mapMode);
-    }
-
-    public int getMapMode() {
-        return SharedPreferences.getMapMode(GeoMobyApplication.getContext());
+        @JvmStatic
+        val instance: SettingsManager?
+            get() {
+                if (mInstance == null) {
+                    mInstance = SettingsManager()
+                }
+                return mInstance
+            }
     }
 }

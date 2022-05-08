@@ -1,93 +1,103 @@
-package com.geomoby.demoapp.logic.location;
+package com.geomoby.demoapp.logic.location
 
-import android.Manifest;
-import android.content.pm.PackageManager;
-import android.location.Location;
-import android.os.Bundle;
-import android.os.Looper;
+import android.Manifest
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.common.api.GoogleApiClient
+import com.google.android.gms.location.LocationRequest
+import androidx.core.app.ActivityCompat
+import com.geomoby.demoapp.GeoMobyApplication
+import android.content.pm.PackageManager
+import android.location.Location
+import com.google.android.gms.location.LocationServices
+import android.os.Looper
+import android.os.Bundle
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.location.LocationResult
 
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
+class LocationManager private constructor() : LocationCallback(),
+    GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
-import com.geomoby.demoapp.GeoMobyApplication;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.location.LocationServices;
+    private var mDelegate: LocationManagerCallback? = null
 
-
-public class LocationManager extends LocationCallback implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
-    private static final long UPDATE_INTERVAL_MILLISECONDS = 10 * 1000;
-    private static final long FASTEST_INTERVAL_MILLISECONDS = 2 * 1000;
-
-    private static LocationManager mInstance = null;
-
-    private LocationManagerCallback mDelegate = null;
     /**
      * Google API client
      */
-    private final ThreadLocal<GoogleApiClient> mGoogleApiClient = new ThreadLocal<GoogleApiClient>();
+    private val mGoogleApiClient = ThreadLocal<GoogleApiClient>()
+    fun setDelegate(delegate: LocationManagerCallback?) {
+        mDelegate = delegate
+    }
 
-
-    public static LocationManager getInstance() {
-        if (mInstance == null) {
-            mInstance = new LocationManager();
+    private val locationRequest: LocationRequest
+        private get() {
+            val locationRequest = LocationRequest()
+            locationRequest.priority = LocationRequest.PRIORITY_NO_POWER
+            locationRequest.interval = UPDATE_INTERVAL_MILLISECONDS
+            locationRequest.fastestInterval = FASTEST_INTERVAL_MILLISECONDS
+            return locationRequest
         }
-        return mInstance;
-    }
 
-    private LocationManager() {
-        mGoogleApiClient.set(new GoogleApiClient.Builder(GeoMobyApplication.getContext())
-                .addApi(LocationServices.API)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .build());
-        mGoogleApiClient.get().connect();
-    }
-
-    public void setDelegate(LocationManagerCallback delegate) {
-        mDelegate = delegate;
-    }
-
-    private LocationRequest getLocationRequest() {
-        LocationRequest locationRequest = new LocationRequest();
-        locationRequest.setPriority(LocationRequest.PRIORITY_NO_POWER);
-        locationRequest.setInterval(UPDATE_INTERVAL_MILLISECONDS);
-        locationRequest.setFastestInterval(FASTEST_INTERVAL_MILLISECONDS);
-        return locationRequest;
-    }
-
-    private void startLocationUpdates() {
-        if (ActivityCompat.checkSelfPermission(GeoMobyApplication.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            LocationServices.getFusedLocationProviderClient(GeoMobyApplication.getContext()).requestLocationUpdates(getLocationRequest(), this, Looper.myLooper());
+    private fun startLocationUpdates() {
+        GeoMobyApplication.context?.let { context->
+            if (ActivityCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                LocationServices.getFusedLocationProviderClient(context)
+                    .requestLocationUpdates(
+                        locationRequest, this, Looper.myLooper()
+                    )
+            }
         }
     }
 
-    @Override
-    public void onConnected(Bundle bundle) {
-        startLocationUpdates();
+    override fun onConnected(bundle: Bundle?) {
+        startLocationUpdates()
     }
 
-    @Override
-    public void onConnectionSuspended(int i) {
-        mGoogleApiClient.get().connect();
+    override fun onConnectionSuspended(i: Int) {
+        mGoogleApiClient.get()!!.connect()
     }
 
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        mGoogleApiClient.get().connect();
+    override fun onConnectionFailed(connectionResult: ConnectionResult) {
+        mGoogleApiClient.get()!!.connect()
     }
 
-    @Override
-    public void onLocationResult(LocationResult locationResult) {
+    override fun onLocationResult(locationResult: LocationResult) {
         if (mDelegate != null) {
-            mDelegate.onLocationChanged(locationResult.getLastLocation());
+            mDelegate!!.onLocationChanged(locationResult.lastLocation)
         }
     }
 
-    public interface LocationManagerCallback {
-        void onLocationChanged(Location location);
+    interface LocationManagerCallback {
+        fun onLocationChanged(location: Location?)
+    }
+
+    companion object {
+        private const val UPDATE_INTERVAL_MILLISECONDS = (10 * 1000).toLong()
+        private const val FASTEST_INTERVAL_MILLISECONDS = (2 * 1000).toLong()
+        private var mInstance: LocationManager? = null
+
+        @JvmStatic
+        val instance: LocationManager?
+            get() {
+                if (mInstance == null) {
+                    mInstance = LocationManager()
+                }
+                return mInstance
+            }
+    }
+
+    init {
+        GeoMobyApplication.context?.let { context ->
+            mGoogleApiClient.set(
+                GoogleApiClient.Builder(context)
+                    .addApi(LocationServices.API)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .build()
+            )
+            mGoogleApiClient.get()?.connect()
+        }
     }
 }

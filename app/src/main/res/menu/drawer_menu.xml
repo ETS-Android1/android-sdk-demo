@@ -10,6 +10,10 @@
             android:id="@+id/nav_settings"
             android:icon="@mipmap/settings"
             android:title="Settings" />
+        <item
+            android:id="@+id/nav_history"
+            android:icon="@mipmap/location"
+            android:title="Fence History" />
     </group>
 
     <!--<group

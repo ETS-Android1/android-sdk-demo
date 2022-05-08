@@ -1,140 +1,141 @@
-package com.geomoby.demoapp.logic.geomoby;
+package com.geomoby.demoapp.logic.geomoby
 
-import android.app.PendingIntent;
-import android.content.Intent;
-import android.location.Location;
-import android.util.Log;
+import android.content.Context
+import android.location.Location
+import android.util.Log
+import com.geomoby.GeoMoby
+import com.geomoby.GeoMoby.Companion.setTags
+import com.geomoby.GeoMoby.Companion.start
+import com.geomoby.GeoMoby.Companion.updateFences
+import com.geomoby.GeoMoby.Companion.updateInstanceId
+import com.geomoby.callbacks.GeomobyServiceCallback
+import com.geomoby.demoapp.logic.firebase.FirebaseManager.Companion.initFirebase
+import com.geomoby.demoapp.logic.geomoby.GeoMobyManager
+import com.geomoby.demoapp.logic.geomoby.GeoMobyManager.GeoMobyManagerCallback
+import com.geomoby.core.data.data_source.preference_storages.GeomobyDataStorage
+import com.geomoby.classes.GeomobyFenceView
+import com.geomoby.demoapp.logic.firebase.FirebaseManager
+import com.geomoby.classes.GeomobyError
+import com.geomoby.demoapp.GeoMobyApplication
+import java.util.*
 
-import com.geomoby.classes.GeomobyError;
-import com.geomoby.GeoMoby;
-import com.geomoby.callbacks.GeomobyServiceCallback;
-import com.geomoby.classes.GeomobyFenceView;
-import com.geomoby.demoapp.GeoMobyApplication;
-import com.geomoby.demoapp.R;
-import com.geomoby.demoapp.logic.firebase.FirebaseManager;
-import com.geomoby.managers.GeomobyDataManager;
+class GeoMobyManager private constructor() : GeomobyServiceCallback {
+    private val TAG = GeoMobyManager::class.java.simpleName
+    private var mDelegate: GeoMobyManagerCallback? = null
+    private var mStarted = false
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
-public class GeoMobyManager implements GeomobyServiceCallback {
-    private final String TAG = GeoMobyManager.class.getSimpleName();
-
-    private static GeoMobyManager mInstance = null;
-
-    private GeoMobyManagerCallback mDelegate = null;
-    private boolean mStarted = false;
-
-    public static GeoMobyManager getInstance() {
-        if (mInstance == null) {
-            mInstance = new GeoMobyManager();
-        }
-        return mInstance;
-    }
-
-
-    private GeoMobyManager() {
+    init {
         // Build geomoby. build() method returns Geomoby object
-        new GeoMoby.Builder(GeoMobyApplication.getContext(), "OCSQSV3P", this)
-                .setDevMode(true)
-                .setUUID("f7826da6-4fa2-4e98-8024-bc5b71e0893e")
-                .setOfflineMode(true)
-                .setSilenceWindow(23,0)
-                .build();
-
-        Map<String, String> tags = new HashMap<>();
-        tags.put("gender", "male");
-        tags.put("age", "27");
-        tags.put("membership", "gold");
-        GeoMoby.Companion.setTags(tags);
+        GeoMoby.Builder(GeoMobyApplication.context, "OCSQSV3P", this)
+            .setDevMode(true)
+            .setUUID("f7826da6-4fa2-4e98-8024-bc5b71e0893e")
+            .setOfflineMode(true)
+            .setSilenceWindow(23, 0)
+            .build()
+        val tags: MutableMap<String?, String?> = HashMap()
+        tags["gender"] = "male"
+        tags["age"] = "27"
+        tags["membership"] = "gold"
+        setTags(tags)
     }
 
-    public void setDelegate(GeoMobyManagerCallback delegate) {
-        mDelegate = delegate;
+    fun setDelegate(delegate: GeoMobyManagerCallback, context: Context) {
+        mDelegate = delegate
         // Initial states
-        if (mDelegate != null) {
-
-            Location initLocation = GeomobyDataManager.Companion.getInstance().getInitLocation();
-            if (initLocation != null) {
-                mDelegate.onInitLocationChanged(initLocation);
+        mDelegate?.let { callback ->
+            val gds = GeomobyDataStorage(context)
+            gds.initLocation?.let {
+                callback.onInitLocationChanged(it)
             }
 
-            String distance = GeomobyDataManager.Companion.getInstance().getMinDistance();
-            boolean inside =  GeomobyDataManager.Companion.getInstance().getInside();
-            if (distance != null) {
-                mDelegate.onDistanceChanged(distance, inside);
+            val inside = gds.inside
+            gds.minDistance?.let {
+                callback.onDistanceChanged(it, inside)
             }
 
-            boolean scanning =  GeomobyDataManager.Companion.getInstance().getScanning();
-            mDelegate.onBeaconScanChanged(scanning);
+            val scanning = gds.scanning
+            callback.onBeaconScanChanged(scanning)
 
-            ArrayList<GeomobyFenceView> fences = GeomobyDataManager.Companion.getInstance().getFenceViews();
-            if (fences != null) {
-                mDelegate.onFenceListChanged(fences);
+            gds.fenceViews?.let { array->
+                val arrayList = ArrayList<GeomobyFenceView>()
+                array.forEach {
+                    arrayList.add(it)
+                }
+                callback.onFenceListChanged(arrayList)
             }
+
         }
     }
 
-    public void start() {
-        if (!mStarted) {
-            GeoMoby.Companion.start();
-            mStarted = true;
+    fun start() {
+        Log.d("Permission", "Point 3")
+        //if (!mStarted) {
+        GeoMoby.start()
+        mStarted = true
+        //}
+    }
+
+    fun updateFences() {
+        GeoMoby.updateFences()
+    }
+
+    fun updateFirebaseId(firebaseId: String?) {
+        updateInstanceId(firebaseId!!)
+    }
+
+    fun initLocationChanged(location: Location?) {
+        mDelegate?.let {
+            it.onInitLocationChanged(location)
         }
     }
 
-    public void updateFences() {
-        GeoMoby.Companion.updateFences();
-    }
-
-    public void updateFirebaseId(String firebaseId) {
-        GeoMoby.Companion.updateInstanceId(firebaseId);
-    }
-
-    public void initLocationChanged(Location location) {
-        if (mDelegate != null) {
-            mDelegate.onInitLocationChanged(location);
+    fun distanceChanged(distance: String?, inside: Boolean) {
+        mDelegate?.let {
+            it.onDistanceChanged(distance, inside)
         }
     }
 
-    public void distanceChanged(String distance, boolean inside) {
-        if (mDelegate != null) {
-            mDelegate.onDistanceChanged(distance, inside);
+    fun beaconScanChanged(scanning: Boolean) {
+        mDelegate?.let {
+            it.onBeaconScanChanged(scanning)
         }
     }
 
-    public void beaconScanChanged(boolean scanning) {
-        if (mDelegate != null) {
-            mDelegate.onBeaconScanChanged(scanning);
+    fun fenceListChanged(fences: ArrayList<GeomobyFenceView>?) {
+        mDelegate?.let {
+            mDelegate!!.onFenceListChanged(fences)
         }
     }
 
-    public void fenceListChanged(ArrayList<GeomobyFenceView> fences) {
-        if (mDelegate != null) {
-            mDelegate.onFenceListChanged(fences);
-        }
+    override fun onStarted() {
+        Log.d(TAG, "Service started!")
+        initFirebase()
     }
 
-    @Override
-    public void onStarted() {
-        Log.d(TAG, "Service started!");
-        FirebaseManager.initFirebase();
+    override fun onStopped() {
+        Log.d(TAG, "Service stopped!")
     }
 
-    @Override
-    public void onStopped() {
-        Log.d(TAG, "Service stopped!");
+    override fun onError(geomobyError: GeomobyError?) {
+        Log.d(TAG, "Error - " + geomobyError!!.message + "!")
     }
 
-    @Override
-    public void onError(GeomobyError geomobyError) {
-        Log.d(TAG, "Error - " + geomobyError.getMessage() + "!");
+    interface GeoMobyManagerCallback {
+        fun onInitLocationChanged(location: Location?)
+        fun onDistanceChanged(distance: String?, inside: Boolean)
+        fun onBeaconScanChanged(scanning: Boolean)
+        fun onFenceListChanged(fences: ArrayList<GeomobyFenceView>?)
     }
 
-    public interface GeoMobyManagerCallback {
-        void onInitLocationChanged(Location location);
-        void onDistanceChanged(String distance, boolean inside);
-        void onBeaconScanChanged(boolean scanning);
-        void onFenceListChanged(ArrayList<GeomobyFenceView> fences);
+    companion object {
+        private var mInstance: GeoMobyManager? = null
+        @JvmStatic
+        val instance: GeoMobyManager?
+            get() {
+                if (mInstance == null) {
+                    mInstance = GeoMobyManager()
+                }
+                return mInstance
+            }
     }
 }

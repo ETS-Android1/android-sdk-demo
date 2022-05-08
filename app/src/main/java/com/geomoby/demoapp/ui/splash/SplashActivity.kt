@@ -1,29 +1,20 @@
-package com.geomoby.demoapp.ui.splash;
+package com.geomoby.demoapp.ui.splash
 
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import gr.net.maroulis.library.EasySplashScreen
+import com.geomoby.demoapp.R
+import com.geomoby.demoapp.ui.main.MainActivityNew
 
-import android.os.Bundle;
-import android.view.View;
-
-import androidx.appcompat.app.AppCompatActivity;
-
-import com.geomoby.demoapp.R;
-import com.geomoby.demoapp.ui.main.MainActivity;
-
-import gr.net.maroulis.library.EasySplashScreen;
-
-public class SplashActivity extends AppCompatActivity {
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        View easySplashScreenView = new EasySplashScreen(SplashActivity.this)
-                .withFullScreen()
-                .withTargetActivity(MainActivity.class)
-                .withSplashTimeOut(3000)
-                .withBackgroundResource(R.mipmap.splash)
-                .create();
-
-        setContentView(easySplashScreenView);
+class SplashActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val easySplashScreenView = EasySplashScreen(this@SplashActivity)
+            .withFullScreen()
+            .withTargetActivity(MainActivityNew::class.java)
+            .withSplashTimeOut(3000)
+            .withBackgroundResource(R.mipmap.splash)
+            .create()
+        setContentView(easySplashScreenView)
     }
 }

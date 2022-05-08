@@ -1,22 +1,17 @@
-package com.geomoby.demoapp;
+package com.geomoby.demoapp
 
-import android.content.Context;
+import android.content.Context
+import androidx.multidex.MultiDexApplication
+import com.geomoby.demoapp.GeoMobyApplication
 
-import androidx.multidex.MultiDexApplication;
-
-import com.geomoby.GeoMoby;
-
-public class GeoMobyApplication extends MultiDexApplication {
-
-    private static Context mContext;
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        mContext = getApplicationContext();
+class GeoMobyApplication : MultiDexApplication() {
+    override fun onCreate() {
+        super.onCreate()
+        context = applicationContext
     }
 
-    public static Context getContext() {
-        return mContext;
+    companion object {
+        var context: Context? = null
+            private set
     }
 }

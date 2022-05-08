@@ -2,4 +2,9 @@
     <string name="app_name">GeoMoby Demo App</string>
     <string name="permission_rationale_title">Permissions Required!</string>
     <string name="permission_rationale_message">You need to allow access to your location in order to use the GeoMoby Demo App</string>
+    <string name="always_allow">Please open app settings an allow background location scanning.</string>
+    <string name="open_settings">Open settings</string>
+    <string name="ok">Ok</string>
+    <string name="cancel">Cancel</string>
+    <string name="clear">Clear</string>
 </resources>

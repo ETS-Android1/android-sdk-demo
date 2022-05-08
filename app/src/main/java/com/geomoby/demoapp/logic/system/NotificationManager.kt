@@ -1,69 +1,72 @@
-package com.geomoby.demoapp.logic.system;
+package com.geomoby.demoapp.logic.system
 
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.PendingIntent;
-import android.app.TaskStackBuilder;
-import android.content.Context;
-import android.content.Intent;
-import android.graphics.Color;
-import android.os.Build;
+import android.content.Intent
+import androidx.annotation.DrawableRes
+import android.app.PendingIntent
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.TaskStackBuilder
+import android.content.Context
+import android.graphics.Color
+import android.os.Build
+import androidx.core.app.NotificationCompat
+import com.geomoby.demoapp.logic.system.NotificationManager.NotificationID
+import java.util.concurrent.atomic.AtomicInteger
 
-import androidx.annotation.DrawableRes;
-import androidx.annotation.RequiresApi;
+object NotificationManager {
+    private const val NOTIFICATION_CHANNEL_ID = "GeoMobyNotificationChannelID"
+    private const val NOTIFICATION_CHANNEL_NAME = "GM Notification Manager"
+    private const val NOTIFICATION_IMPRTANCE = NotificationManager.IMPORTANCE_HIGH
+    @JvmStatic
+    fun sendNotification(
+        context: Context,
+        intent: Intent?,
+        title: String?,
+        body: String?,
+        @DrawableRes icon: Int
+    ) {
+        val stackBuilder = TaskStackBuilder
+            .create(context)
+            .addNextIntentWithParentStack(intent)
+        val pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
 
-import java.util.concurrent.atomic.AtomicInteger;
+        val notificationBuilder = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
+            .setSmallIcon(icon)
+            .setContentTitle(title)
+            .setContentText(body)
+            .setTicker(title)
+            .setWhen(System.currentTimeMillis())
+            .setAutoCancel(true)
+            .setContentIntent(pendingIntent)
+            .setCategory(NotificationCompat.CATEGORY_ALARM)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
 
-public class NotificationManager {
-    private static final String NOTIFICATION_CHANNEL_ID = "GeoMobyNotificationChannelID";
-    private static final String NOTIFICATION_CHANNEL_NAME = "GM Notification Manager";
-    private static final int NOTIFICATION_IMPRTANCE = android.app.NotificationManager.IMPORTANCE_HIGH;
-
-
-    public static void sendNotification(Context context, Intent intent, String title, String body, @DrawableRes int icon) {
-
-        TaskStackBuilder stackBuilder = TaskStackBuilder
-                .create(context)
-                .addNextIntentWithParentStack(intent);
-
-        PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        Notification.Builder notificationBuilder = new Notification.Builder(context)
-                    .setSmallIcon(icon)
-                    .setContentTitle(title)
-                    .setContentText(body)
-                    .setTicker(title)
-                    .setWhen(System.currentTimeMillis())
-                    .setAutoCancel(true)
-                    .setContentIntent(pendingIntent);
-
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            notificationBuilder.setChannelId(NOTIFICATION_CHANNEL_ID);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            notificationBuilder.setChannelId(NOTIFICATION_CHANNEL_ID)
         }
-
-        android.app.NotificationManager notificationManager = (android.app.NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-
-        if (notificationManager != null) {
+        (context.getSystemService(Context.NOTIFICATION_SERVICE)
+                as NotificationManager)?.let { notificationManager ->
             // For Android 8+
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, NOTIFICATION_CHANNEL_NAME, NOTIFICATION_IMPRTANCE);
-                notificationChannel.enableLights(true);
-                notificationChannel.setLightColor(Color.RED);
-                notificationChannel.enableVibration(true);
-                notificationChannel.setVibrationPattern(new long[]{500, 500, 500});
-                notificationBuilder.setChannelId(NOTIFICATION_CHANNEL_ID);
-                notificationManager.createNotificationChannel(notificationChannel);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val notificationChannel = NotificationChannel(
+                    NOTIFICATION_CHANNEL_ID,
+                    NOTIFICATION_CHANNEL_NAME, NOTIFICATION_IMPRTANCE
+                )
+                notificationChannel.enableLights(true)
+                notificationChannel.lightColor = Color.RED
+                notificationChannel.enableVibration(true)
+                notificationChannel.vibrationPattern = longArrayOf(500, 500, 500)
+                notificationBuilder.setChannelId(NOTIFICATION_CHANNEL_ID)
+                notificationManager.createNotificationChannel(notificationChannel)
             }
-
-            notificationManager.notify(NotificationID.getID(), notificationBuilder.build());
+            notificationManager.notify(NotificationID.iD, notificationBuilder.build())
         }
     }
 
     // Use this class to generate unique notification ID
-    private static class NotificationID {
-        private static final AtomicInteger c = new AtomicInteger(2);
-        static int getID() {
-            return c.incrementAndGet();
-        }
+    private object NotificationID {
+        private val c = AtomicInteger(2)
+        val iD: Int
+            get() = c.incrementAndGet()
     }
 }

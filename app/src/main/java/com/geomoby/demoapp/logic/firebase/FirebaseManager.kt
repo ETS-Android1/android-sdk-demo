@@ -1,56 +1,50 @@
-package com.geomoby.demoapp.logic.firebase;
+package com.geomoby.demoapp.logic.firebase
 
-import android.util.Log;
+import android.util.Log
+import com.google.firebase.messaging.FirebaseMessagingService
+import com.google.firebase.messaging.RemoteMessage
+import com.geomoby.demoapp.logic.firebase.FirebaseManager
+import com.geomoby.demoapp.logic.geomoby.GeoMobyManager
+import com.google.firebase.messaging.FirebaseMessaging
 
-import com.geomoby.demoapp.logic.geomoby.GeoMobyManager;
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.FirebaseMessagingService;
-import com.google.firebase.messaging.RemoteMessage;
-
-import org.jetbrains.annotations.NotNull;
-
-public class FirebaseManager extends FirebaseMessagingService {
-    private static final String TAG = FirebaseManager.class.getSimpleName();
-
-    public static void initFirebase() {
-        // Subscribe to topic
-        FirebaseMessaging.getInstance().subscribeToTopic("GeomobySync");
-    }
-
-    @Override
-    public void onMessageReceived(@NotNull RemoteMessage remoteMessage) {
-
-        Log.d(TAG, "From: " + remoteMessage.getFrom());
-
-        if ((remoteMessage.getFrom() != null) && (remoteMessage.getFrom().equals("/topics/GeomobySync"))) {
+class FirebaseManager : FirebaseMessagingService() {
+    override fun onMessageReceived(remoteMessage: RemoteMessage) {
+        Log.d(TAG, "From: " + remoteMessage.from)
+        if (remoteMessage.from != null && remoteMessage.from == "/topics/GeomobySync") {
 
             // Check if message contains a data payload.
-            if (remoteMessage.getData().size() > 0) {
-                Log.d(TAG, "Message data payload: " + remoteMessage.getData());
-
-                String messageType = remoteMessage.getData().get("MessageType");
-                if (messageType.equals("GeomobySyncRequest")) {
-                    Log.d(TAG, "GeomobySyncRequest accepted");
+            if (remoteMessage.data.isNotEmpty()) {
+                Log.d(TAG, "Message data payload: " + remoteMessage.data)
+                val messageType = remoteMessage.data["MessageType"]
+                if (messageType == "GeomobySyncRequest") {
+                    Log.d(TAG, "GeomobySyncRequest accepted")
 
                     // Update fence list
-                    GeoMobyManager.getInstance().updateFences();
+                    GeoMobyManager.instance?.updateFences()
                 }
             }
 
             // Check if message contains a notification payload.
-            if (remoteMessage.getNotification() != null) {
-                Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
+            remoteMessage.notification?.let {
+                Log.d(TAG, "Message Notification Body: ${it.body}")
             }
         }
     }
 
-    @Override
-    public void onNewToken(@NotNull String token) {
-        super.onNewToken(token);
-
-        Log.d(TAG, "Token:  " + token);
+    override fun onNewToken(token: String) {
+        super.onNewToken(token)
+        Log.d(TAG, "Token:  $token")
 
         // Update firebase id
-        GeoMobyManager.getInstance().updateFirebaseId(token);
+        GeoMobyManager.instance?.updateFirebaseId(token)
+    }
+
+    companion object {
+        private val TAG = FirebaseManager::class.java.simpleName
+        @JvmStatic
+        fun initFirebase() {
+            // Subscribe to topic
+            FirebaseMessaging.getInstance().subscribeToTopic("GeomobySync")
+        }
     }
 }
