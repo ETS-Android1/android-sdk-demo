@@ -6,12 +6,14 @@ import android.os.Handler
 import android.os.Message
 import android.widget.Toast
 import com.geomoby.demoapp.R
+import com.geomoby.demoapp.data.EventStorage
 import com.geomoby.demoapp.data.EventStorageSP
 import com.geomoby.demoapp.databinding.ActivityFenceHistoryBinding
 import com.geomoby.demoapp.databinding.ActivityMainBinding
 import com.geomoby.demoapp.databinding.ActivitySettingsBinding
 import kotlinx.android.synthetic.main.activity_fence_history.*
 import java.util.*
+import kotlin.Comparator
 
 class FenceHistoryActivity : AppCompatActivity() {
 
@@ -26,15 +28,19 @@ class FenceHistoryActivity : AppCompatActivity() {
             EventStorageSP(this).clearEventsList()
             initAdapter()
         }
+        binding.btnRefresh.setOnClickListener {
+            initAdapter()
+        }
     }
 
     override fun onStart() {
         super.onStart()
-        timer.scheduleAtFixedRate(object:TimerTask(){
+        initAdapter()
+        /*timer.scheduleAtFixedRate(object:TimerTask(){
             override fun run() {
                 updateHandler.sendEmptyMessage(1)
             }
-        }, 0L, REFRESH_PERIOD)
+        }, 0L, REFRESH_PERIOD)*/
     }
 
     override fun onStop() {
@@ -49,7 +55,7 @@ class FenceHistoryActivity : AppCompatActivity() {
     }
 
     private fun initAdapter(){
-        val list = EventStorageSP(this).getEventsList()
+        val list = EventStorageSP(this).getEventsList().sortedWith { o1, o2 -> - o1.time.compareTo(o2.time) }
         rvMain.adapter = FenceHistoryAdapter(list)
     }
 

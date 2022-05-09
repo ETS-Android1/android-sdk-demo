@@ -66,9 +66,14 @@ class MainActivityNew:AppCompatActivity(), NavigationView.OnNavigationItemSelect
 
     private fun startApp() {
         testGPSError()
+        testBatteryOptimization()
         mMapFragment.getMapAsync(this)
         val serviceIntent = Intent(this, GeoService::class.java)
-        startService(serviceIntent)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(serviceIntent)
+        } else{
+            startService(serviceIntent)
+        }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int,
@@ -77,7 +82,17 @@ class MainActivityNew:AppCompatActivity(), NavigationView.OnNavigationItemSelect
         when (requestCode) {
             101 -> {
                 if (isGranted(grantResults)) {
-                    startApp()
+                    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
+                        if (checkBackgroundLocationPermissionAPI30(this)) {
+                            Log.e("Permissions", "Permissions Granted new!")
+                            startApp()
+                        } else {
+                            Log.e("Permissions", "Background Location Permissions Not Granted!")
+                        }
+                    } else {
+                        Log.e("Permissions", "Permissions Granted old!")
+                        startApp()
+                    }
                 } else {
                     Toast.makeText(this, "Permission request failed", Toast.LENGTH_LONG).show()
                 }
@@ -140,7 +155,6 @@ class MainActivityNew:AppCompatActivity(), NavigationView.OnNavigationItemSelect
     }
 
     override fun onInitLocationChanged(location: Location?) {
-        hideProgress()
         if (mMap != null) {
             location?.let {
                 val latlong = LatLng(location.latitude, location.longitude)
@@ -162,15 +176,16 @@ class MainActivityNew:AppCompatActivity(), NavigationView.OnNavigationItemSelect
     }
 
     override fun onBeaconScanChanged(scanning: Boolean) {
-        if (scanning) {
-            binding.mainBeaconText.text = "Beacons scanning"
+        binding.mainBeaconText.text = if (scanning) {
+            "Beacons scanning"
         } else {
-            binding.mainBeaconText.text = "No beacons scanning"
+            "No beacons scanning"
         }
     }
 
     override fun onFenceListChanged(fences: ArrayList<GeomobyFenceView>?) {
         if(fences == null) return
+        hideProgress()
         mMap?.let { map->
             map.clear()
             for (fence in fences) {

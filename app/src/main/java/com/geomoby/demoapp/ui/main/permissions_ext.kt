@@ -1,6 +1,7 @@
 package com.geomoby.demoapp.ui.main
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
@@ -23,23 +24,50 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import kotlinx.coroutines.NonCancellable.cancel
 import java.lang.ClassCastException
+import androidx.core.content.ContextCompat.startActivity
 
-val permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-    arrayOf(
-        Manifest.permission.ACCESS_COARSE_LOCATION,
-        Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.ACTIVITY_RECOGNITION,
-        Manifest.permission.READ_PHONE_STATE,
-        Manifest.permission.READ_EXTERNAL_STORAGE
-    )
-} else {
-    arrayOf(
-        Manifest.permission.ACCESS_COARSE_LOCATION,
-        Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.READ_PHONE_STATE,
-        Manifest.permission.READ_EXTERNAL_STORAGE
-    )
-}
+import android.content.Context.POWER_SERVICE
+
+import androidx.core.content.ContextCompat.getSystemService
+
+import android.os.PowerManager
+
+import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
+
+
+val permissions =
+    when {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+            arrayOf(
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACTIVITY_RECOGNITION,
+                Manifest.permission.READ_PHONE_STATE,
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.BLUETOOTH_SCAN,
+                Manifest.permission.BLUETOOTH_CONNECT
+            )
+        }
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> {
+            arrayOf(
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACTIVITY_RECOGNITION,
+                Manifest.permission.READ_PHONE_STATE,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            )
+        }
+        else -> {
+            arrayOf(
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.READ_PHONE_STATE,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            )
+        }
+    }
 
 @RequiresApi(Build.VERSION_CODES.M)
 internal fun AppCompatActivity.askPermissions(
@@ -69,7 +97,7 @@ internal fun AppCompatActivity.askPermissions(
 
 }
 
-private fun checkBackgroundLocationPermissionAPI30(activity: Activity): Boolean {
+internal fun checkBackgroundLocationPermissionAPI30(activity: Activity): Boolean {
     return if (ActivityCompat.checkSelfPermission(
             activity, Manifest.permission.ACCESS_BACKGROUND_LOCATION
         ) != PackageManager.PERMISSION_GRANTED
@@ -124,97 +152,6 @@ fun isGranted(grantResults: IntArray):Boolean{
     }
 }
 
-/*internal fun AppCompatActivity.askPermissions(onPermissionConfirmed:()->Unit) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        //checkPermission(Manifest.permission.ACCESS_FINE_LOCATION, LOCATION_PERMISSION_RESPONSE);
-        val permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            arrayOf(
-                Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACTIVITY_RECOGNITION,
-                Manifest.permission.READ_PHONE_STATE,
-                Manifest.permission.READ_EXTERNAL_STORAGE
-            )
-        } else {
-            arrayOf(
-                Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.READ_PHONE_STATE,
-                Manifest.permission.READ_EXTERNAL_STORAGE
-            )
-        }
-        Dexter.withActivity(this)
-            .withPermissions(*permissions)
-            .withListener(object : MultiplePermissionsListener {
-                override fun onPermissionsChecked(report: MultiplePermissionsReport) {
-                    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
-                        if (checkBackgroundLocationPermissionAPI30(this@askPermissions)) {
-                            Log.e("Dexter", "Permissions Granted new!")
-                            onPermissionConfirmed()
-                        } else {
-                            Log.e("Dexter", "Background Location Permissions Not Granted!")
-                        }
-                    } else {
-                        Log.e("Dexter", "Permissions Granted old!")
-                        onPermissionConfirmed()
-                    }
-                }
-
-                private fun checkBackgroundLocationPermissionAPI30(activity: Activity): Boolean {
-                    return if (ActivityCompat.checkSelfPermission(
-                            activity, Manifest.permission.ACCESS_BACKGROUND_LOCATION
-                        ) != PackageManager.PERMISSION_GRANTED
-                    ) {
-                        androidx.appcompat.app.AlertDialog.Builder(activity)
-                            .setMessage(R.string.always_allow)
-                            .setPositiveButton(R.string.open_settings) { dialogInterface, i ->
-                                ActivityCompat.requestPermissions(
-                                    activity,
-                                    arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION),
-                                    101
-                                )
-                            }
-                            .setNegativeButton(R.string.ok) { dialogInterface, i -> }
-                            .create()
-                            .show()
-                        false
-                    } else {
-                        true
-                    }
-                }
-
-                override fun onPermissionRationaleShouldBeShown(
-                    permissions: List<PermissionRequest>,
-                    token: PermissionToken
-                ) {
-                    Log.e("Dexter", "Permissions should be shown!")
-                    showPermissionRationale(token)
-                    //token.continuePermissionRequest();
-                }
-
-                private fun showPermissionRationale(token: PermissionToken) {
-                    AlertDialog.Builder(this@askPermissions).setTitle(R.string.permission_rationale_title)
-                        .setMessage(R.string.permission_rationale_message)
-                        .setNegativeButton(R.string.cancel) { dialog, _ ->
-                            dialog.dismiss()
-                            token.cancelPermissionRequest()
-                        }
-                        .setPositiveButton(R.string.ok) { dialog, _ ->
-                            dialog.dismiss()
-                            token.continuePermissionRequest()
-                        }
-                        .setOnDismissListener { token.cancelPermissionRequest() }
-                        .show()
-                }
-            }).withErrorListener { error -> Log.e("Dexter", "There was an error: $error") }
-            .check()
-    } else {
-        onPermissionConfirmed()
-    }
-}*/
-
-
-
 internal fun AppCompatActivity.testGPSError() {
     val mLocationRequestHighAccuracy = LocationRequest()
     mLocationRequestHighAccuracy.interval = 500
@@ -252,5 +189,20 @@ internal fun AppCompatActivity.testGPSError() {
                 }
             }
         }
+    }
+}
+
+@SuppressLint("BatteryLife")
+fun AppCompatActivity.testBatteryOptimization(){
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        val intent = Intent()
+        getSystemService(this,PowerManager::class.java)?.let {
+            if (!it.isIgnoringBatteryOptimizations(packageName)) {
+                intent.action = Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
+                intent.data = Uri.parse("package:$packageName")
+                startActivity(this, intent, null)
+            }
+        }
+
     }
 }

@@ -28,7 +28,11 @@ object NotificationManager {
         val stackBuilder = TaskStackBuilder
             .create(context)
             .addNextIntentWithParentStack(intent)
-        val pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
+        val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                stackBuilder.getPendingIntent(0, PendingIntent.FLAG_IMMUTABLE)
+            } else {
+                stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
+            }
 
         val notificationBuilder = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
             .setSmallIcon(icon)

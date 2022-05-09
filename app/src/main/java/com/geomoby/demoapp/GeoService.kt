@@ -55,12 +55,22 @@ class GeoService : GeomobyUserService() {
         //GeoMoby.Companion.stop();
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             val restartService = Intent(applicationContext, this.javaClass)
-            val pendingIntent = PendingIntent.getService(
-                applicationContext,
-                1,
-                restartService,
-                PendingIntent.FLAG_ONE_SHOT
-            )
+
+            val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                PendingIntent.getService(
+                    applicationContext,
+                    1,
+                    restartService,
+                    PendingIntent.FLAG_IMMUTABLE
+                )
+            } else {
+                PendingIntent.getService(
+                    applicationContext,
+                    1,
+                    restartService,
+                    PendingIntent.FLAG_ONE_SHOT
+                )
+            }
             val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
             alarmManager?.set(AlarmManager.ELAPSED_REALTIME, 5000, pendingIntent)
         }
