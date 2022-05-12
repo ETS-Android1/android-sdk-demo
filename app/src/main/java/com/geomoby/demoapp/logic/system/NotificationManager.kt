@@ -41,6 +41,7 @@ object NotificationManager {
             .setTicker(title)
             .setWhen(System.currentTimeMillis())
             .setAutoCancel(true)
+            .setTimeoutAfter(60_000)
             .setContentIntent(pendingIntent)
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)

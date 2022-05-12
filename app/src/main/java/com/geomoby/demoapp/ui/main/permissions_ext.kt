@@ -75,7 +75,7 @@ internal fun AppCompatActivity.askPermissions(
     onPermissionConfirmed:()->Unit) {
     when {
         checkPermissions(this) -> {
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 if (checkBackgroundLocationPermissionAPI30(this)) {
                     Log.e("Permissions", "Permissions Granted new!")
                     onPermissionConfirmed()
@@ -156,7 +156,7 @@ internal fun AppCompatActivity.testGPSError() {
     val mLocationRequestHighAccuracy = LocationRequest()
     mLocationRequestHighAccuracy.interval = 500
     mLocationRequestHighAccuracy.fastestInterval = 500
-    mLocationRequestHighAccuracy.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
+    mLocationRequestHighAccuracy.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
     val builder = LocationSettingsRequest.Builder()
         .addLocationRequest(mLocationRequestHighAccuracy)
     val result = LocationServices.getSettingsClient(this).checkLocationSettings(builder.build())
@@ -205,4 +205,18 @@ fun AppCompatActivity.testBatteryOptimization(){
         }
 
     }
+}
+
+private fun Context.buildAlertMessageNoGps() {
+    val builder = AlertDialog.Builder(this)
+    builder.setMessage("Your GPS seems to be disabled, do you want to enable it?")
+        .setCancelable(false)
+        .setPositiveButton(
+            "Yes"
+        ) { dialog, id -> startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)) }
+        .setNegativeButton(
+            "No"
+        ) { dialog, id -> dialog.cancel() }
+    val alert = builder.create()
+    alert.show()
 }

@@ -11,6 +11,7 @@ import android.location.Location
 import com.google.android.gms.location.LocationServices
 import android.os.Looper
 import android.os.Bundle
+import android.util.Log
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.location.LocationResult
 
@@ -43,10 +44,15 @@ class LocationManager private constructor() : LocationCallback(),
                     Manifest.permission.ACCESS_FINE_LOCATION
                 ) == PackageManager.PERMISSION_GRANTED
             ) {
-                LocationServices.getFusedLocationProviderClient(context)
-                    .requestLocationUpdates(
-                        locationRequest, this, Looper.myLooper()
-                    )
+                val looper = Looper.myLooper()
+                if(looper!=null){
+                    LocationServices.getFusedLocationProviderClient(context)
+                        .requestLocationUpdates(
+                            locationRequest, this, looper
+                        )
+                } else {
+                    Log.d("New service","looper is null")
+                }
             }
         }
     }

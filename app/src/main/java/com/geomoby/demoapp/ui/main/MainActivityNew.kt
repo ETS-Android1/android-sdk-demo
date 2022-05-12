@@ -1,6 +1,8 @@
 package com.geomoby.demoapp.ui.main
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
@@ -64,9 +66,11 @@ class MainActivityNew:AppCompatActivity(), NavigationView.OnNavigationItemSelect
         }
     }
 
+    @SuppressLint("ServiceCast")
     private fun startApp() {
         testGPSError()
         testBatteryOptimization()
+
         mMapFragment.getMapAsync(this)
         val serviceIntent = Intent(this, GeoService::class.java)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -129,7 +133,7 @@ class MainActivityNew:AppCompatActivity(), NavigationView.OnNavigationItemSelect
         return true
     }
 
-    override fun onMapReady(googleMap: GoogleMap?) {
+    override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
         mMap?.uiSettings?.isCompassEnabled = false
         mMap?.uiSettings?.isMyLocationButtonEnabled = false

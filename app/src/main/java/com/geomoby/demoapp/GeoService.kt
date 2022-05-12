@@ -155,6 +155,13 @@ class GeoService : GeomobyUserService() {
 
     override fun newInitLocation(location: Location) {
         instance!!.initLocationChanged(location)
+        EventStorageSP(this).addEvent(
+            EventStorage.Event(
+                title = "Init location updated",
+                message = "location - accuracy - ${location.accuracy} " +
+                        "longitude - ${location.longitude} latitude - ${location.latitude}"
+            )
+        )
     }
 
     override val notificationIntent: Intent
