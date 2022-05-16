@@ -30,6 +30,7 @@ import com.geomoby.demoapp.logic.location.LocationManager
 import com.geomoby.demoapp.logic.location.LocationManager.LocationManagerCallback
 import com.geomoby.demoapp.logic.settings.SettingsManager
 import com.geomoby.demoapp.ui.fence_history.FenceHistoryActivity
+import com.geomoby.demoapp.ui.fences_log.FencesLogActivity
 import com.geomoby.demoapp.ui.settings.SettingsActivityNew
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -122,6 +123,10 @@ class MainActivityNew:AppCompatActivity(), NavigationView.OnNavigationItemSelect
         when (item.itemId) {
             R.id.nav_settings -> {
                 val intent = Intent(this, SettingsActivityNew::class.java)
+                startActivity(intent)
+            }
+            R.id.nav_logs -> {
+                val intent = Intent(this, FencesLogActivity::class.java)
                 startActivity(intent)
             }
             R.id.nav_history -> {

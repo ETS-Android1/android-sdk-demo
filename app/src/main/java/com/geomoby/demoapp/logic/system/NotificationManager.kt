@@ -17,6 +17,7 @@ object NotificationManager {
     private const val NOTIFICATION_CHANNEL_ID = "GeoMobyNotificationChannelID"
     private const val NOTIFICATION_CHANNEL_NAME = "GM Notification Manager"
     private const val NOTIFICATION_IMPRTANCE = NotificationManager.IMPORTANCE_HIGH
+
     @JvmStatic
     fun sendNotification(
         context: Context,
@@ -25,14 +26,14 @@ object NotificationManager {
         body: String?,
         @DrawableRes icon: Int
     ) {
-        val stackBuilder = TaskStackBuilder
+        /*val stackBuilder = TaskStackBuilder
             .create(context)
             .addNextIntentWithParentStack(intent)
-        val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 stackBuilder.getPendingIntent(0, PendingIntent.FLAG_IMMUTABLE)
             } else {
                 stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
-            }
+            }*/
 
         val notificationBuilder = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
             .setSmallIcon(icon)
@@ -42,7 +43,7 @@ object NotificationManager {
             .setWhen(System.currentTimeMillis())
             .setAutoCancel(true)
             .setTimeoutAfter(60_000)
-            .setContentIntent(pendingIntent)
+            //.setContentIntent(pendingIntent)
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
 

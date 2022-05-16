@@ -14,6 +14,10 @@
             android:id="@+id/nav_history"
             android:icon="@mipmap/location"
             android:title="Fence History" />
+        <item
+            android:id="@+id/nav_logs"
+            android:icon="@mipmap/location"
+            android:title="Fence Logs" />
     </group>
 
     <!--<group

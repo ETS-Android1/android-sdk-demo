@@ -1,10 +1,9 @@
-package com.geomoby.demoapp.ui.fence_history
+package com.geomoby.demoapp.ui.fences_log
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
-import android.view.View
 import android.widget.Toast
 import com.geomoby.demoapp.R
 import com.geomoby.demoapp.data.EventStorage
@@ -13,12 +12,11 @@ import com.geomoby.demoapp.data.ExperimentsLogger
 import com.geomoby.demoapp.databinding.ActivityFenceHistoryBinding
 import com.geomoby.demoapp.databinding.ActivityMainBinding
 import com.geomoby.demoapp.databinding.ActivitySettingsBinding
-import com.geomoby.demoapp.logic.system.NotificationManager
 import kotlinx.android.synthetic.main.activity_fence_history.*
 import java.util.*
 import kotlin.Comparator
 
-class FenceHistoryActivity : AppCompatActivity() {
+class FencesLogActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityFenceHistoryBinding
     private val timer:Timer = Timer()
@@ -27,28 +25,27 @@ class FenceHistoryActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityFenceHistoryBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        binding.tvLogData.visibility = View.GONE
-        binding.scrollLogs.visibility = View.GONE
-        binding.rvMain.visibility = View.VISIBLE
         binding.settingsBackButton.setOnClickListener { finish() }
-        binding.settingsNavigationText.setText(R.string.fence_history)
-
+        binding.settingsNavigationText.setText(R.string.fences_log)
         binding.btnClear.setOnClickListener{
-            EventStorageSP(this).clearEventsList()
-            initAdapter()
+            //EventStorageSP(this).clearEventsList()
+            //initAdapter()
+            ExperimentsLogger(this).clearAllLogs()
+            initLogText()
         }
         binding.btnRefresh.setOnClickListener {
-            initAdapter()
+            //initAdapter()
+            initLogText()
         }
         binding.btnSendToEmail.setOnClickListener {
-            NotificationManager.sendNotification(this,null,
-                "Test","Test",R.mipmap.offer)
+            ExperimentsLogger(this).sendLog(this)
         }
     }
 
     override fun onStart() {
         super.onStart()
-        initAdapter()
+        //initAdapter()
+        initLogText()
         /*timer.scheduleAtFixedRate(object:TimerTask(){
             override fun run() {
                 updateHandler.sendEmptyMessage(1)
@@ -69,11 +66,6 @@ class FenceHistoryActivity : AppCompatActivity() {
 
     private fun initLogText(){
         binding.tvLogData.text = ExperimentsLogger(this).getAllLogData()
-    }
-
-    private fun initAdapter(){
-        val list = EventStorageSP(this).getEventsList().sortedWith { o1, o2 -> - o1.time.compareTo(o2.time) }
-        binding.rvMain.adapter = FenceHistoryAdapter(list)
     }
 
     companion object{

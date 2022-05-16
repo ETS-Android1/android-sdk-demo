@@ -22,7 +22,6 @@ import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
-import kotlinx.coroutines.NonCancellable.cancel
 import java.lang.ClassCastException
 import androidx.core.content.ContextCompat.startActivity
 

@@ -23,6 +23,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission  android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
 
     <uses-feature
         android:name="android.hardware.bluetooth_le"
@@ -37,9 +38,6 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning"
         android:fullBackupOnly="true">
-        <activity
-            android:name=".ui.fence_history.FenceHistoryActivity"
-            android:exported="true" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -70,6 +68,14 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.settings.SettingsActivityNew"
+            android:exported="true"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.fence_history.FenceHistoryActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"  />
+        <activity
+            android:name=".ui.fences_log.FencesLogActivity"
             android:exported="true"
             android:screenOrientation="portrait" />
 
@@ -132,7 +138,7 @@
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
-        <receiver android:name="com.geomoby.core.presentation.services.GPSServiceWakeUpper"
+        <receiver android:name="com.geomoby.core.presentation.services.general.GPSServiceWakeUpper"
             android:exported="true" />
 
         <service
@@ -148,6 +154,15 @@
             android:foregroundServiceType="location"
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.geomoby"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
     </application>
 
 </manifest>

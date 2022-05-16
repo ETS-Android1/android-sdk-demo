@@ -62,16 +62,16 @@ class LocationManager private constructor() : LocationCallback(),
     }
 
     override fun onConnectionSuspended(i: Int) {
-        mGoogleApiClient.get()!!.connect()
+        mGoogleApiClient.get()?.connect()
     }
 
     override fun onConnectionFailed(connectionResult: ConnectionResult) {
-        mGoogleApiClient.get()!!.connect()
+        mGoogleApiClient.get()?.connect()
     }
 
     override fun onLocationResult(locationResult: LocationResult) {
         if (mDelegate != null) {
-            mDelegate!!.onLocationChanged(locationResult.lastLocation)
+            mDelegate?.onLocationChanged(locationResult.lastLocation)
         }
     }
 
