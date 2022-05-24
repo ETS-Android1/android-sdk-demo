@@ -1,6 +1,5 @@
 package com.geomoby.demoapp
 
-import com.geomoby.demoapp.logic.geomoby.GeoMobyManager.Companion.instance
 import com.geomoby.demoapp.logic.system.NotificationManager.sendNotification
 import com.geomoby.GeomobyUserService
 import com.geomoby.demoapp.logic.geomoby.GeoMobyManager
@@ -22,12 +21,18 @@ import androidx.core.content.ContextCompat
 import com.geomoby.demoapp.data.EventStorage
 import com.geomoby.demoapp.data.EventStorageSP
 import com.geomoby.demoapp.data.ExperimentsLogger
+import dagger.hilt.android.AndroidEntryPoint
 import java.lang.StringBuilder
 import java.util.ArrayList
+import javax.inject.Inject
 
-class GeoService : GeomobyUserService() {
+@AndroidEntryPoint
+class GeoService: GeomobyUserService() {
+
+    private lateinit var geomobyManager: GeoMobyManager
+
     override fun beaconScan(scanning: Boolean) {
-        instance!!.beaconScanChanged(scanning)
+        geomobyManager.beaconScanChanged(scanning)
     }
 
     override fun geomobyActionBasic(geomobyActionBasic: GeomobyActionBasic) {
@@ -49,7 +54,8 @@ class GeoService : GeomobyUserService() {
 
     override fun onCreate() {
         super.onCreate()
-        instance!!.start()
+        geomobyManager = GeoMobyManager.getInstance()
+        geomobyManager.start()
     }
 
     override fun onDestroy() {
@@ -155,11 +161,11 @@ class GeoService : GeomobyUserService() {
             )
         }
         Log.d("GeoService", "New Fences - $builder")
-        instance!!.fenceListChanged(fences)
+        geomobyManager.fenceListChanged(fences)
     }
 
     override fun newInitLocation(location: Location) {
-        instance!!.initLocationChanged(location)
+        geomobyManager.initLocationChanged(location)
         EventStorageSP(this).addEvent(
             EventStorage.Event(
                 title = "Init location updated",
@@ -186,7 +192,7 @@ class GeoService : GeomobyUserService() {
         get() = "GeoMoby service is running"
 
     override fun newDistance(distance: String, inside: Boolean) {
-        instance!!.distanceChanged(distance, inside)
+        geomobyManager.distanceChanged(distance, inside)
     }
 
     companion object {

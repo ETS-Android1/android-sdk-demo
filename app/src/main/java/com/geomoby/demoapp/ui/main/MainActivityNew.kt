@@ -38,23 +38,32 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.navigation.NavigationView
+import dagger.hilt.android.AndroidEntryPoint
 import java.lang.Exception
 import java.util.*
+import androidx.activity.viewModels
+import androidx.core.app.ActivityCompat
+import androidx.lifecycle.lifecycleScope
 
-class MainActivityNew:AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
-    OnMapReadyCallback, GeoMobyManagerCallback,
-    LocationManagerCallback {
+@AndroidEntryPoint
+class MainActivityNew:AppCompatActivity(),
+    NavigationView.OnNavigationItemSelectedListener,
+    OnMapReadyCallback
+{
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var mMapFragment: SupportMapFragment
     private var mMap: GoogleMap? = null
     lateinit var requestPermissionLauncher: ActivityResultLauncher<Array<String>>
 
+    private val viewModel: MainActivityViewModule by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setupDrawer()
+
         mMapFragment = supportFragmentManager.findFragmentById(R.id.mainMapFragment) as SupportMapFragment
     }
 
@@ -65,6 +74,48 @@ class MainActivityNew:AppCompatActivity(), NavigationView.OnNavigationItemSelect
         askPermissions(this) {
             startApp()
         }
+        observeViewModel()
+    }
+
+    private fun observeViewModel() {
+        lifecycleScope.launchWhenStarted {
+            viewModel.eventFlow.collect{
+                when(it){
+                    is MainActivityViewModule.UiEvent.InitLocationChanged -> {
+                        if (mMap != null) {
+                            mMap!!.animateCamera(CameraUpdateFactory.newLatLngZoom(it.location, 14.0f))
+                        }
+                    }
+                    is MainActivityViewModule.UiEvent.DistanceChanged -> {
+                        binding.mainNearestMetersText.text = it.distance
+                    }
+                    is MainActivityViewModule.UiEvent.BeaconScanChanged -> {
+                        binding.mainBeaconText.text = if (it.isScanning) {
+                            "Beacons scanning"
+                        } else {
+                            "No beacons scanning"
+                        }
+                    }
+                    is MainActivityViewModule.UiEvent.FenceListChanged -> {
+                        hideProgress()
+                        mMap?.let { map->
+                            map.clear()
+                            for (fence in it.fences) {
+                                when (fence.type?.lowercase(Locale.ROOT)) {
+                                    "polygon" -> addPolygon(map, fence)
+                                    "point" -> addCircle(map, fence)
+                                    "beacon" -> addBeacon(map, fence)
+                                    "line" -> addLine(map, fence)
+                                }
+                            }
+                        }
+                    }
+                    is MainActivityViewModule.UiEvent.LocationChanged -> {
+                        binding.mainLocationText.text = it.location
+                    }
+                }
+            }
+        }
     }
 
     @SuppressLint("ServiceCast")
@@ -73,11 +124,13 @@ class MainActivityNew:AppCompatActivity(), NavigationView.OnNavigationItemSelect
         testBatteryOptimization()
 
         mMapFragment.getMapAsync(this)
+
+        viewModel.onEvent(MainActivityEvent.StartGeomobyService)
         val serviceIntent = Intent(this, GeoService::class.java)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(serviceIntent)
+            this.startForegroundService(serviceIntent)
         } else{
-            startService(serviceIntent)
+            this.startService(serviceIntent)
         }
     }
 
@@ -142,75 +195,25 @@ class MainActivityNew:AppCompatActivity(), NavigationView.OnNavigationItemSelect
         mMap = googleMap
         mMap?.uiSettings?.isCompassEnabled = false
         mMap?.uiSettings?.isMyLocationButtonEnabled = false
-        mMap?.setMyLocationEnabled(true)
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+        mMap?.isMyLocationEnabled = true
 
-        mMap!!.mapType = when (SettingsManager.instance!!.mapMode) {
+        mMap!!.mapType = when (SettingsManager(this).mapMode) {
             SettingsManager.MAP_MODE_STANDARD -> GoogleMap.MAP_TYPE_NORMAL
             SettingsManager.MAP_MODE_HYBRID -> GoogleMap.MAP_TYPE_HYBRID
             SettingsManager.MAP_MODE_SATELLITE -> GoogleMap.MAP_TYPE_SATELLITE
             else -> GoogleMap.MAP_TYPE_NORMAL
         }
-
-        startGeoMobyManager()
-        startLocationManager()
-    }
-
-    private fun startGeoMobyManager() {
-        GeoMobyManager.instance?.setDelegate(this, this)
-    }
-
-    private fun startLocationManager() {
-        LocationManager.instance?.setDelegate(this)
-    }
-
-    override fun onInitLocationChanged(location: Location?) {
-        if (mMap != null) {
-            location?.let {
-                val latlong = LatLng(location.latitude, location.longitude)
-                mMap!!.animateCamera(CameraUpdateFactory.newLatLngZoom(latlong, 14.0f))
-            }
-        }
-    }
-
-    override fun onDistanceChanged(distance: String?, inside: Boolean) {
-        //TODO Move to SDK
-        try {
-            val distanceFloat = distance!!.toFloat()
-            Log.d("API", "distance changed ui - $distanceFloat")
-            val result = Math.round(distanceFloat).toString() + "M"
-            binding.mainNearestMetersText.text = result
-        } catch (ex: Exception) {
-            ex.printStackTrace()
-        }
-    }
-
-    override fun onBeaconScanChanged(scanning: Boolean) {
-        binding.mainBeaconText.text = if (scanning) {
-            "Beacons scanning"
-        } else {
-            "No beacons scanning"
-        }
-    }
-
-    override fun onFenceListChanged(fences: ArrayList<GeomobyFenceView>?) {
-        if(fences == null) return
-        hideProgress()
-        mMap?.let { map->
-            map.clear()
-            for (fence in fences) {
-                when (fence.type?.lowercase(Locale.ROOT)) {
-                    "polygon" -> addPolygon(map, fence)
-                    "point" -> addCircle(map, fence)
-                    "beacon" -> addBeacon(map, fence)
-                    "line" -> addLine(map, fence)
-                }
-            }
-        }
-    }
-
-    override fun onLocationChanged(location: Location?) {
-        location?.let {
-            binding.mainLocationText.text = "${it.latitude} ${it.longitude}"
-        }
+        viewModel.onEvent(MainActivityEvent.StartGeomobyManager)
+        viewModel.onEvent(MainActivityEvent.StartLocationManager)
     }
 }

@@ -5,28 +5,18 @@ import android.location.Location
 import android.util.Log
 import com.geomoby.GeoMoby
 import com.geomoby.GeoMoby.Companion.setTags
-import com.geomoby.GeoMoby.Companion.start
-import com.geomoby.GeoMoby.Companion.updateFences
 import com.geomoby.GeoMoby.Companion.updateInstanceId
 import com.geomoby.callbacks.GeomobyServiceCallback
 import com.geomoby.demoapp.logic.firebase.FirebaseManager.Companion.initFirebase
-import com.geomoby.demoapp.logic.geomoby.GeoMobyManager
-import com.geomoby.demoapp.logic.geomoby.GeoMobyManager.GeoMobyManagerCallback
 import com.geomoby.core.data.data_source.preference_storages.GeomobyDataStorage
 import com.geomoby.classes.GeomobyFenceView
-import com.geomoby.demoapp.logic.firebase.FirebaseManager
 import com.geomoby.classes.GeomobyError
-import com.geomoby.demoapp.GeoMobyApplication
 import java.util.*
 
-class GeoMobyManager private constructor() : GeomobyServiceCallback {
-    private val TAG = GeoMobyManager::class.java.simpleName
-    private var mDelegate: GeoMobyManagerCallback? = null
-    private var mStarted = false
-
-    init {
+class GeomobyStartManager : GeomobyServiceCallback {
+    fun start(context: Context){
         // Build geomoby. build() method returns Geomoby object
-        GeoMoby.Builder(GeoMobyApplication.context, "OCSQSV3P", this)
+        GeoMoby.Builder(context, "OCSQSV3P", this)
             .setDevMode(true)
             .setUUID("f7826da6-4fa2-4e98-8024-bc5b71e0893e")
             .setOfflineMode(true)
@@ -39,11 +29,30 @@ class GeoMobyManager private constructor() : GeomobyServiceCallback {
         setTags(tags)
     }
 
-    fun setDelegate(delegate: GeoMobyManagerCallback, context: Context) {
+    override fun onError(error: GeomobyError?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onStarted() {
+        TODO("Not yet implemented")
+        initFirebase()
+    }
+
+    override fun onStopped() {
+        TODO("Not yet implemented")
+    }
+}
+
+class GeoMobyManager private constructor(): GeomobyServiceCallback {
+    private val TAG = GeoMobyManager::class.java.simpleName
+    private var mDelegate: GeoMobyManagerCallback? = null
+    private var mStarted = false
+
+    fun setDelegate(delegate: GeoMobyManagerCallback, geomobyDataStorage: GeomobyDataStorage) {
         mDelegate = delegate
         // Initial states
         mDelegate?.let { callback ->
-            val gds = GeomobyDataStorage(context)
+            val gds = geomobyDataStorage
             gds.initLocation?.let {
                 callback.onInitLocationChanged(it)
             }
@@ -129,13 +138,13 @@ class GeoMobyManager private constructor() : GeomobyServiceCallback {
 
     companion object {
         private var mInstance: GeoMobyManager? = null
+
         @JvmStatic
-        val instance: GeoMobyManager?
-            get() {
+        fun getInstance():GeoMobyManager {
                 if (mInstance == null) {
                     mInstance = GeoMobyManager()
                 }
-                return mInstance
+                return mInstance!!
             }
     }
 }

@@ -6,8 +6,12 @@ import com.google.firebase.messaging.RemoteMessage
 import com.geomoby.demoapp.logic.firebase.FirebaseManager
 import com.geomoby.demoapp.logic.geomoby.GeoMobyManager
 import com.google.firebase.messaging.FirebaseMessaging
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
-class FirebaseManager : FirebaseMessagingService() {
+@AndroidEntryPoint
+class FirebaseManager @Inject constructor(var geomobyManager: GeoMobyManager)  : FirebaseMessagingService() {
+
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         Log.d(TAG, "From: " + remoteMessage.from)
         if (remoteMessage.from != null && remoteMessage.from == "/topics/GeomobySync") {
@@ -18,9 +22,8 @@ class FirebaseManager : FirebaseMessagingService() {
                 val messageType = remoteMessage.data["MessageType"]
                 if (messageType == "GeomobySyncRequest") {
                     Log.d(TAG, "GeomobySyncRequest accepted")
-
                     // Update fence list
-                    GeoMobyManager.instance?.updateFences()
+                    geomobyManager.updateFences()
                 }
             }
 
@@ -36,7 +39,7 @@ class FirebaseManager : FirebaseMessagingService() {
         Log.d(TAG, "Token:  $token")
 
         // Update firebase id
-        GeoMobyManager.instance?.updateFirebaseId(token)
+        geomobyManager.updateFirebaseId(token)
     }
 
     companion object {
