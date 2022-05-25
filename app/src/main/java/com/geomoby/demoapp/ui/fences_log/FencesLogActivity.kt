@@ -4,71 +4,59 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
-import android.widget.Toast
+import androidx.activity.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.geomoby.demoapp.R
-import com.geomoby.demoapp.data.EventStorage
-import com.geomoby.demoapp.data.EventStorageSP
-import com.geomoby.demoapp.data.ExperimentsLogger
+import com.geomoby.demoapp.data.event_logger.EventLoggerFile
 import com.geomoby.demoapp.databinding.ActivityFenceHistoryBinding
-import com.geomoby.demoapp.databinding.ActivityMainBinding
-import com.geomoby.demoapp.databinding.ActivitySettingsBinding
-import kotlinx.android.synthetic.main.activity_fence_history.*
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
 import java.util.*
-import kotlin.Comparator
 
+@AndroidEntryPoint
 class FencesLogActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityFenceHistoryBinding
     private val timer:Timer = Timer()
+    private val viewModel:FencesLogViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityFenceHistoryBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        //viewModel.onEvent(FenceLogEvent.ClearLog)
+
         binding.settingsBackButton.setOnClickListener { finish() }
         binding.settingsNavigationText.setText(R.string.fences_log)
         binding.btnClear.setOnClickListener{
-            //EventStorageSP(this).clearEventsList()
-            //initAdapter()
-            ExperimentsLogger(this).clearAllLogs()
-            initLogText()
+            viewModel.onEvent(FenceLogEvent.ClearLog)
+            viewModel.onEvent(FenceLogEvent.GetFenceLog)
         }
+
         binding.btnRefresh.setOnClickListener {
-            //initAdapter()
-            initLogText()
+            viewModel.onEvent(FenceLogEvent.GetFenceLog)
         }
+
         binding.btnSendToEmail.setOnClickListener {
-            ExperimentsLogger(this).sendLog(this)
+            viewModel.onEvent(FenceLogEvent.SendLog(this))
+        }
+
+        lifecycleScope.launchWhenCreated {
+            viewModel.eventFlow.collect{ event ->
+                when(event){
+                    is FencesLogViewModel.UiEvent.LogsUploaded -> {
+                        event.logStr?.let{
+                            binding.tvLogData.text = it
+                        }
+                    }
+                }
+            }
         }
     }
 
     override fun onStart() {
         super.onStart()
-        //initAdapter()
-        initLogText()
-        /*timer.scheduleAtFixedRate(object:TimerTask(){
-            override fun run() {
-                updateHandler.sendEmptyMessage(1)
-            }
-        }, 0L, REFRESH_PERIOD)*/
-    }
-
-    override fun onStop() {
-        super.onStop()
-        timer.cancel()
-    }
-
-    private val updateHandler = object: Handler(){
-        override fun dispatchMessage(msg: Message) {
-            //initAdapter()
-        }
-    }
-
-    private fun initLogText(){
-        binding.tvLogData.text = ExperimentsLogger(this).getAllLogData()
-    }
-
-    companion object{
-        const val REFRESH_PERIOD = 10_000L
+        viewModel.onEvent(FenceLogEvent.GetFenceLog)
     }
 }

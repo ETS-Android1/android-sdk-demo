@@ -5,23 +5,21 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Message
 import android.view.View
-import android.widget.Toast
+import androidx.activity.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.geomoby.demoapp.R
-import com.geomoby.demoapp.data.EventStorage
-import com.geomoby.demoapp.data.EventStorageSP
-import com.geomoby.demoapp.data.ExperimentsLogger
+import com.geomoby.demoapp.data.event_storage.EventStorageSP
+import com.geomoby.demoapp.data.event_logger.EventLoggerFile
 import com.geomoby.demoapp.databinding.ActivityFenceHistoryBinding
-import com.geomoby.demoapp.databinding.ActivityMainBinding
-import com.geomoby.demoapp.databinding.ActivitySettingsBinding
 import com.geomoby.demoapp.logic.system.NotificationManager
-import kotlinx.android.synthetic.main.activity_fence_history.*
+import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
-import kotlin.Comparator
 
+@AndroidEntryPoint
 class FenceHistoryActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityFenceHistoryBinding
-    private val timer:Timer = Timer()
+    private val viewModel:FenceHistoryViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,49 +32,27 @@ class FenceHistoryActivity : AppCompatActivity() {
         binding.settingsNavigationText.setText(R.string.fence_history)
 
         binding.btnClear.setOnClickListener{
-            EventStorageSP(this).clearEventsList()
-            initAdapter()
+            viewModel.onEvent(FenceHistoryEvent.ClearEventsList)
+            viewModel.onEvent(FenceHistoryEvent.GetEventsList)
         }
         binding.btnRefresh.setOnClickListener {
-            initAdapter()
+            viewModel.onEvent(FenceHistoryEvent.GetEventsList)
         }
-        binding.btnSendToEmail.setOnClickListener {
-            NotificationManager.sendNotification(this,null,
-                "Test","Test",R.mipmap.offer)
+
+        lifecycleScope.launchWhenCreated {
+            viewModel.eventFlow.collect{ event ->
+                when(event){
+                    is FenceHistoryViewModel.UiEvent.EventListUploaded -> {
+                        val list = event.events.sortedWith { o1, o2 -> - o1.time.compareTo(o2.time) }
+                        binding.rvMain.adapter = FenceHistoryAdapter(list)
+                    }
+                }
+            }
         }
     }
 
     override fun onStart() {
         super.onStart()
-        initAdapter()
-        /*timer.scheduleAtFixedRate(object:TimerTask(){
-            override fun run() {
-                updateHandler.sendEmptyMessage(1)
-            }
-        }, 0L, REFRESH_PERIOD)*/
-    }
-
-    override fun onStop() {
-        super.onStop()
-        timer.cancel()
-    }
-
-    private val updateHandler = object: Handler(){
-        override fun dispatchMessage(msg: Message) {
-            //initAdapter()
-        }
-    }
-
-    private fun initLogText(){
-        binding.tvLogData.text = ExperimentsLogger(this).getAllLogData()
-    }
-
-    private fun initAdapter(){
-        val list = EventStorageSP(this).getEventsList().sortedWith { o1, o2 -> - o1.time.compareTo(o2.time) }
-        binding.rvMain.adapter = FenceHistoryAdapter(list)
-    }
-
-    companion object{
-        const val REFRESH_PERIOD = 10_000L
+        viewModel.onEvent(FenceHistoryEvent.GetEventsList)
     }
 }

@@ -11,6 +11,7 @@ import androidx.lifecycle.viewModelScope
 import com.geomoby.classes.GeomobyFenceView
 import com.geomoby.core.data.data_source.preference_storages.GeomobyDataStorage
 import com.geomoby.demoapp.GeoService
+import com.geomoby.demoapp.domain.usecases.map_mode.MapModeUseCases
 import com.geomoby.demoapp.logic.geomoby.GeoMobyManager
 import com.geomoby.demoapp.logic.location.LocationManager
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -25,7 +26,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainActivityViewModule @Inject constructor(
-    val context: Application
+    val context: Application,
+    val mapModeUseCases: MapModeUseCases
 ):ViewModel(),
     GeoMobyManager.GeoMobyManagerCallback,
     LocationManager.LocationManagerCallback {
@@ -39,7 +41,22 @@ class MainActivityViewModule @Inject constructor(
         when(event){
             is MainActivityEvent.StartGeomobyManager -> startGeoMobyManager()
             is MainActivityEvent.StartLocationManager -> startLocationManager()
-            is MainActivityEvent.StartGeomobyService -> {}
+            is MainActivityEvent.StartGeomobyService -> {
+                val serviceIntent = Intent(context, GeoService::class.java)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    context.startForegroundService(serviceIntent)
+                } else{
+                    context.startService(serviceIntent)
+                }
+            }
+            is MainActivityEvent.StartServiceCheck -> startAlarm(context)
+
+            is MainActivityEvent.GetMapMode -> {
+                viewModelScope.launch {
+                    _eventFlow.emit(
+                        UiEvent.MapModeChanged(mapModeUseCases.getMapMode()))
+                }
+            }
         }
     }
 
@@ -102,6 +119,7 @@ class MainActivityViewModule @Inject constructor(
         data class BeaconScanChanged(val isScanning:Boolean): UiEvent()
         data class FenceListChanged(val fences: ArrayList<GeomobyFenceView>):UiEvent()
         data class LocationChanged(val location:String):UiEvent()
+        data class MapModeChanged(val mode:Int):UiEvent()
     }
 
 }

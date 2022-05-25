@@ -1,22 +1,11 @@
-package com.geomoby.demoapp.data
+package com.geomoby.demoapp.data.event_storage
 
 import android.content.Context
+import com.geomoby.demoapp.domain.repositories.EventStorage
 import com.google.gson.Gson
-import com.google.gson.annotations.SerializedName
 
-interface EventStorage{
-    data class Event(
-        @SerializedName("title") val title:String,
-        @SerializedName("message") val message:String,
-        @SerializedName("time") val time:Long = System.currentTimeMillis()
-    )
 
-    fun addEvent(event:Event)
-    fun getEventsList():List<Event>
-    fun clearEventsList()
-}
-
-class EventStorageSP(context: Context):EventStorage {
+class EventStorageSP(context: Context): EventStorage {
     private val sharedPreferences = context.getSharedPreferences(SETTINGS_KEY, Context.MODE_PRIVATE)
     private val gson = Gson()
 
@@ -28,7 +17,7 @@ class EventStorageSP(context: Context):EventStorage {
     }
 
     override fun getEventsList() = getEventSet().map { item->
-        gson.fromJson(item,EventStorage.Event::class.java)
+        gson.fromJson(item, EventStorage.Event::class.java)
     }.toList()
 
     override fun clearEventsList() {

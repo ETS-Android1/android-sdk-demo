@@ -6,7 +6,6 @@ import com.geomoby.demoapp.logic.geomoby.GeoMobyManager
 import com.geomoby.classes.GeomobyActionBasic
 import android.content.Intent
 import com.geomoby.demoapp.ui.main.MainActivityNew
-import com.geomoby.demoapp.R
 import android.os.Build
 import android.app.PendingIntent
 import android.app.AlarmManager
@@ -16,15 +15,13 @@ import android.util.Log
 import com.geomoby.classes.GeomobyActionData
 import com.geomoby.demoapp.ui.discount.DiscountActivityNew
 import com.geomoby.classes.GeomobyFenceView
-import com.geomoby.demoapp.GeoService
 import androidx.core.content.ContextCompat
-import com.geomoby.demoapp.data.EventStorage
-import com.geomoby.demoapp.data.EventStorageSP
-import com.geomoby.demoapp.data.ExperimentsLogger
+import com.geomoby.demoapp.data.event_storage.EventStorageSP
+import com.geomoby.demoapp.data.event_logger.EventLoggerFile
+import com.geomoby.demoapp.domain.repositories.EventStorage
 import dagger.hilt.android.AndroidEntryPoint
 import java.lang.StringBuilder
 import java.util.ArrayList
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class GeoService: GeomobyUserService() {
@@ -49,7 +46,7 @@ class GeoService: GeomobyUserService() {
                 title = geomobyActionBasic.title,
                 message = geomobyActionBasic.body)
         )
-        ExperimentsLogger(applicationContext).addEvent("${geomobyActionBasic.title}: ${geomobyActionBasic.body}")
+        EventLoggerFile(applicationContext).addEvent("${geomobyActionBasic.title}: ${geomobyActionBasic.body}")
     }
 
     override fun onCreate() {
@@ -89,7 +86,7 @@ class GeoService: GeomobyUserService() {
         val key = "id"
         val value = geomobyActionData.getValue(key)
         val eventStorage = EventStorageSP(applicationContext)
-        val experimentLogger = ExperimentsLogger(applicationContext)
+        val experimentLogger = EventLoggerFile(applicationContext)
         if (value != null) {
             val openIntent = Intent(this, DiscountActivityNew::class.java)
             openIntent.putExtra(key, value)
@@ -174,14 +171,14 @@ class GeoService: GeomobyUserService() {
             )
         )
 
-        ExperimentsLogger(applicationContext).addEvent("Init location updated: " +
+        EventLoggerFile(applicationContext).addEvent("Init location updated: " +
                 "location - accuracy - ${location.accuracy} " +
                 "longitude - ${location.longitude} latitude - ${location.latitude}")
     }
 
     // Method for access to low level logs
     override fun newLogMessage(message: String) {
-        ExperimentsLogger(applicationContext).addEvent(message)
+        EventLoggerFile(applicationContext).addEvent(message)
     }
 
     override val notificationIntent: Intent

@@ -1,4 +1,4 @@
-package com.geomoby.demoapp.data
+package com.geomoby.demoapp.data.event_logger
 
 import android.app.Activity
 import android.content.Context

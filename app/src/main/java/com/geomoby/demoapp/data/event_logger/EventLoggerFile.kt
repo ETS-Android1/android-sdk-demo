@@ -1,20 +1,21 @@
-package com.geomoby.demoapp.data
+package com.geomoby.demoapp.data.event_logger
 
 import android.app.Activity
 import android.content.Context
 import android.util.Log
 import com.geomoby.demoapp.BuildConfig
+import com.geomoby.demoapp.domain.repositories.EventLogger
 import java.text.SimpleDateFormat
 import java.util.*
 
-class ExperimentsLogger(val context:Context) {
+class EventLoggerFile(val context:Context): EventLogger {
 
-    fun addEvent(message: String) {
+    override fun addEvent(message: String) {
         putToLog(TYPE_EVENT, message)
     }
 
-    fun getAllLogData() = LogProvider.ReadFile.readListFromLogFile(context)?.joinToString("\n")
-    fun clearAllLogs(){
+    override fun getAllLogData() = LogProvider.ReadFile.readListFromLogFile(context)?.joinToString("\n")
+    override fun clearAllLogs(){
         LogProvider.ClearFile.clear(context)
     }
 
@@ -25,12 +26,12 @@ class ExperimentsLogger(val context:Context) {
         LogProvider.WriteFile.writeToLogFile(context, logStr)
     }
 
-    fun sendLog(activity:Activity){
+    override fun sendLog(activity:Activity){
         LogProvider.ShareFile.sendLogToEmail(activity)
     }
 
     // not updated
-    fun clearAllOldLogs(){
+    override fun clearAllOldLogs(){
         val recordsList = LogProvider.ReadFile.readListFromLogFile(context)
         LogProvider.WriteFile.saveListToLogFile(context, recordsList)
     }

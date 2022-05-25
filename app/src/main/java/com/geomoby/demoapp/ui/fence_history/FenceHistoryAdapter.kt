@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.geomoby.demoapp.R
-import com.geomoby.demoapp.data.EventStorage
+import com.geomoby.demoapp.domain.repositories.EventStorage
 import java.text.SimpleDateFormat
 import java.util.*
 

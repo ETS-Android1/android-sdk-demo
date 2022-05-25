@@ -2,10 +2,8 @@ package com.geomoby.demoapp.ui.main
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.location.Location
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -13,22 +11,11 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
-import com.geomoby.classes.GeomobyFenceView
-import com.geomoby.demoapp.GeoService
 import com.geomoby.demoapp.R
-import com.geomoby.demoapp.data.EventStorage
-import com.geomoby.demoapp.data.EventStorageSP
 import com.geomoby.demoapp.databinding.ActivityMainBinding
-import com.geomoby.demoapp.logic.geomoby.GeoMobyManager
-import com.geomoby.demoapp.logic.geomoby.GeoMobyManager.GeoMobyManagerCallback
-import com.geomoby.demoapp.logic.location.LocationManager
-import com.geomoby.demoapp.logic.location.LocationManager.LocationManagerCallback
-import com.geomoby.demoapp.logic.settings.SettingsManager
 import com.geomoby.demoapp.ui.fence_history.FenceHistoryActivity
 import com.geomoby.demoapp.ui.fences_log.FencesLogActivity
 import com.geomoby.demoapp.ui.settings.SettingsActivityNew
@@ -36,14 +23,13 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.navigation.NavigationView
 import dagger.hilt.android.AndroidEntryPoint
-import java.lang.Exception
 import java.util.*
 import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
+import com.geomoby.demoapp.domain.repositories.MapMode
 
 @AndroidEntryPoint
 class MainActivityNew:AppCompatActivity(),
@@ -65,6 +51,7 @@ class MainActivityNew:AppCompatActivity(),
         setupDrawer()
 
         mMapFragment = supportFragmentManager.findFragmentById(R.id.mainMapFragment) as SupportMapFragment
+        viewModel.onEvent(MainActivityEvent.StartServiceCheck)
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -113,6 +100,14 @@ class MainActivityNew:AppCompatActivity(),
                     is MainActivityViewModule.UiEvent.LocationChanged -> {
                         binding.mainLocationText.text = it.location
                     }
+                    is MainActivityViewModule.UiEvent.MapModeChanged -> {
+                        mMap?.mapType = when (it.mode) {
+                            MapMode.MAP_MODE_STANDARD -> GoogleMap.MAP_TYPE_NORMAL
+                            MapMode.MAP_MODE_HYBRID -> GoogleMap.MAP_TYPE_HYBRID
+                            MapMode.MAP_MODE_SATELLITE -> GoogleMap.MAP_TYPE_SATELLITE
+                            else -> GoogleMap.MAP_TYPE_NORMAL
+                        }
+                    }
                 }
             }
         }
@@ -124,14 +119,7 @@ class MainActivityNew:AppCompatActivity(),
         testBatteryOptimization()
 
         mMapFragment.getMapAsync(this)
-
         viewModel.onEvent(MainActivityEvent.StartGeomobyService)
-        val serviceIntent = Intent(this, GeoService::class.java)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            this.startForegroundService(serviceIntent)
-        } else{
-            this.startService(serviceIntent)
-        }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int,
@@ -206,13 +194,7 @@ class MainActivityNew:AppCompatActivity(),
             return
         }
         mMap?.isMyLocationEnabled = true
-
-        mMap!!.mapType = when (SettingsManager(this).mapMode) {
-            SettingsManager.MAP_MODE_STANDARD -> GoogleMap.MAP_TYPE_NORMAL
-            SettingsManager.MAP_MODE_HYBRID -> GoogleMap.MAP_TYPE_HYBRID
-            SettingsManager.MAP_MODE_SATELLITE -> GoogleMap.MAP_TYPE_SATELLITE
-            else -> GoogleMap.MAP_TYPE_NORMAL
-        }
+        viewModel.onEvent(MainActivityEvent.GetMapMode)
         viewModel.onEvent(MainActivityEvent.StartGeomobyManager)
         viewModel.onEvent(MainActivityEvent.StartLocationManager)
     }

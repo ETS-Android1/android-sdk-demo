@@ -1,17 +1,18 @@
 package com.geomoby.demoapp.ui.settings
 
 import android.os.Bundle
-import android.widget.ImageView
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.geomoby.demoapp.R
 import com.geomoby.demoapp.databinding.ActivitySettingsBinding
-import com.geomoby.demoapp.logic.settings.SettingsManager
-import javax.inject.Inject
+import com.geomoby.demoapp.domain.repositories.MapMode
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class SettingsActivityNew: AppCompatActivity() {
 
-    @Inject
-    lateinit var settingsManager: SettingsManager
+    private val viewModel: SettingsActivityViewModel by viewModels()
 
     private lateinit var binding: ActivitySettingsBinding
 
@@ -23,29 +24,34 @@ class SettingsActivityNew: AppCompatActivity() {
         binding.settingsMap1.setOnClickListener { setMapModeStandard() }
         binding.settingsMap2.setOnClickListener { setMapModeHybrid() }
         binding.settingsMap3.setOnClickListener { setMapModeSatellite() }
+        binding.settingsBackButton.setOnClickListener { finish() }
 
-        val mSettingsBackButton = findViewById<ImageView>(R.id.settingsBackButton)
-        mSettingsBackButton.setOnClickListener { finish() }
-
-        when (settingsManager.mapMode) {
-            SettingsManager.MAP_MODE_STANDARD -> onSetMapStandard()
-            SettingsManager.MAP_MODE_HYBRID -> onSetMapHybrid()
-            SettingsManager.MAP_MODE_SATELLITE -> onSetMapSatellite()
+        lifecycleScope.launchWhenCreated {
+            viewModel.eventFlow.collect{ event->
+                when(event){
+                    is SettingsActivityViewModel.UiEvent.MapModeStandard -> onSetMapStandard()
+                    is SettingsActivityViewModel.UiEvent.MapModeSatellite -> onSetMapSatellite()
+                    is SettingsActivityViewModel.UiEvent.MapModeHybrid -> onSetMapHybrid()
+                }
+            }
         }
     }
+
+    override fun onStart() {
+        super.onStart()
+        viewModel.onEvent(SettingsEvent.GetMapMode)
+    }
+
     private fun setMapModeStandard() {
-        settingsManager.mapMode = SettingsManager.MAP_MODE_STANDARD
-        onSetMapStandard()
+        viewModel.onEvent(SettingsEvent.SetMapMode(MapMode.MAP_MODE_STANDARD))
     }
 
     private fun setMapModeHybrid() {
-        settingsManager.mapMode = SettingsManager.MAP_MODE_HYBRID
-        onSetMapHybrid()
+        viewModel.onEvent(SettingsEvent.SetMapMode(MapMode.MAP_MODE_HYBRID))
     }
 
     private fun setMapModeSatellite() {
-        settingsManager.mapMode = SettingsManager.MAP_MODE_SATELLITE
-        onSetMapSatellite()
+        viewModel.onEvent(SettingsEvent.SetMapMode(MapMode.MAP_MODE_SATELLITE))
     }
 
     private fun onSetMapStandard() {
