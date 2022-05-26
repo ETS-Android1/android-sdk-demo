@@ -7,8 +7,6 @@ plugins {
     id 'kotlin-android-extensions'
     id 'com.google.firebase.crashlytics'
 }
-apply plugin: 'com.android.application'
-apply plugin: 'dagger.hilt.android.plugin'
 
 android {
     compileSdkVersion 31
@@ -121,5 +119,3 @@ dependencies {
 kapt {
     correctErrorTypes true
 }
-
-//apply plugin: 'com.google.gms.google-services'

@@ -1,8 +1,6 @@
 package com.geomoby.demoapp
 
-import com.geomoby.demoapp.logic.system.NotificationManager.sendNotification
 import com.geomoby.GeomobyUserService
-import com.geomoby.demoapp.logic.geomoby.GeoMobyManager
 import com.geomoby.classes.GeomobyActionBasic
 import android.content.Intent
 import com.geomoby.demoapp.ui.main.MainActivityNew
@@ -16,43 +14,53 @@ import com.geomoby.classes.GeomobyActionData
 import com.geomoby.demoapp.ui.discount.DiscountActivityNew
 import com.geomoby.classes.GeomobyFenceView
 import androidx.core.content.ContextCompat
-import com.geomoby.demoapp.data.event_storage.EventStorageSP
 import com.geomoby.demoapp.data.event_logger.EventLoggerFile
 import com.geomoby.demoapp.domain.repositories.EventStorage
+import com.geomoby.demoapp.domain.usecases.event_storage.EventStorageUseCases
+import com.geomoby.demoapp.domain.usecases.geomoby.GeoMobyUseCases
+import com.geomoby.demoapp.domain.usecases.logger.EventLoggerUseCases
+import com.geomoby.demoapp.domain.usecases.notifications.NotificationsUseCase
 import dagger.hilt.android.AndroidEntryPoint
 import java.lang.StringBuilder
 import java.util.ArrayList
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class GeoService: GeomobyUserService() {
 
-    private lateinit var geomobyManager: GeoMobyManager
+    @Inject
+    lateinit var geomobyUseCases: GeoMobyUseCases
+    @Inject
+    lateinit var notificationsUseCase: NotificationsUseCase
+    @Inject
+    lateinit var eventStorageUseCase: EventStorageUseCases
+    @Inject
+    lateinit var eventLoggerUseCases: EventLoggerUseCases
 
     override fun beaconScan(scanning: Boolean) {
-        geomobyManager.beaconScanChanged(scanning)
+        geomobyUseCases.beaconScanChanged(scanning)
     }
 
     override fun geomobyActionBasic(geomobyActionBasic: GeomobyActionBasic) {
         val openIntent = Intent(this, MainActivityNew::class.java)
-        sendNotification(
+        notificationsUseCase.sendNotification(
             this,
             openIntent,
             geomobyActionBasic.title,
             geomobyActionBasic.body,
             R.mipmap.message
         )
-        EventStorageSP(applicationContext).addEvent(
+        eventStorageUseCase.addEvent(
             EventStorage.Event(
                 title = geomobyActionBasic.title,
                 message = geomobyActionBasic.body)
         )
-        EventLoggerFile(applicationContext).addEvent("${geomobyActionBasic.title}: ${geomobyActionBasic.body}")
+        eventLoggerUseCases.addEvent("${geomobyActionBasic.title}: ${geomobyActionBasic.body}")
     }
 
     override fun onCreate() {
         super.onCreate()
-        geomobyManager = GeoMobyManager.getInstance()
-        geomobyManager.start()
+        geomobyUseCases.start()
     }
 
     override fun onDestroy() {
@@ -85,8 +93,6 @@ class GeoService: GeomobyUserService() {
     override fun geomobyActionData(geomobyActionData: GeomobyActionData) {
         val key = "id"
         val value = geomobyActionData.getValue(key)
-        val eventStorage = EventStorageSP(applicationContext)
-        val experimentLogger = EventLoggerFile(applicationContext)
         if (value != null) {
             val openIntent = Intent(this, DiscountActivityNew::class.java)
             openIntent.putExtra(key, value)
@@ -125,26 +131,26 @@ class GeoService: GeomobyUserService() {
                     icon = R.mipmap.drink
                 }
             }
-            eventStorage.addEvent(
+            eventStorageUseCase.addEvent(
                 EventStorage.Event(
                     title = title,
                     message = title
                 )
             )
-            experimentLogger.addEvent(title)
-            sendNotification(this, openIntent, title, title, icon)
+            eventLoggerUseCases.addEvent(title)
+            notificationsUseCase.sendNotification(this, openIntent, title, title, icon)
         } else {
-            sendNotification(
+            notificationsUseCase.sendNotification(
                 this, null, "aaaaa", "bbbbb",
                 R.mipmap.offer
             )
-            eventStorage.addEvent(
+            eventStorageUseCase.addEvent(
                 EventStorage.Event(
                     title = "empty",
                     message = "empty"
                 )
             )
-            experimentLogger.addEvent("empty log notification")
+            eventLoggerUseCases.addEvent("empty log notification")
         }
     }
 
@@ -158,12 +164,12 @@ class GeoService: GeomobyUserService() {
             )
         }
         Log.d("GeoService", "New Fences - $builder")
-        geomobyManager.fenceListChanged(fences)
+        geomobyUseCases.fenceListChanged(fences)
     }
 
     override fun newInitLocation(location: Location) {
-        geomobyManager.initLocationChanged(location)
-        EventStorageSP(this).addEvent(
+        geomobyUseCases.initLocationChanged(location)
+        eventStorageUseCase.addEvent(
             EventStorage.Event(
                 title = "Init location updated",
                 message = "location - accuracy - ${location.accuracy} " +
@@ -171,7 +177,7 @@ class GeoService: GeomobyUserService() {
             )
         )
 
-        EventLoggerFile(applicationContext).addEvent("Init location updated: " +
+        eventLoggerUseCases.addEvent("Init location updated: " +
                 "location - accuracy - ${location.accuracy} " +
                 "longitude - ${location.longitude} latitude - ${location.latitude}")
     }
@@ -189,20 +195,24 @@ class GeoService: GeomobyUserService() {
         get() = "GeoMoby service is running"
 
     override fun newDistance(distance: String, inside: Boolean) {
-        geomobyManager.distanceChanged(distance, inside)
+        geomobyUseCases.distanceChanged(distance, inside)
     }
 
     companion object {
         fun setForeground(context: Context?) {
-            val intent = Intent(context, GeoService::class.java)
-            intent.action = ACTION_FOREGROUND
-            ContextCompat.startForegroundService(context!!, intent)
+            context?.let {
+                val intent = Intent(it, GeoService::class.java)
+                intent.action = ACTION_FOREGROUND
+                ContextCompat.startForegroundService(it, intent)
+            }
         }
 
         fun disableForeground(context: Context?) {
-            val intent = Intent(context, GeoService::class.java)
-            intent.action = ACTION_SERVICE
-            ContextCompat.startForegroundService(context!!, intent)
+            context?.let {
+                val intent = Intent(it, GeoService::class.java)
+                intent.action = ACTION_SERVICE
+                ContextCompat.startForegroundService(it, intent)
+            }
         }
     }
 }

@@ -70,7 +70,7 @@ class MainActivityNew:AppCompatActivity(),
                 when(it){
                     is MainActivityViewModule.UiEvent.InitLocationChanged -> {
                         if (mMap != null) {
-                            mMap!!.animateCamera(CameraUpdateFactory.newLatLngZoom(it.location, 14.0f))
+                            mMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(it.location, 14.0f))
                         }
                     }
                     is MainActivityViewModule.UiEvent.DistanceChanged -> {

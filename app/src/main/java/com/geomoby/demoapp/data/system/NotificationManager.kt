@@ -1,25 +1,22 @@
-package com.geomoby.demoapp.logic.system
+package com.geomoby.demoapp.data.system
 
 import android.content.Intent
 import androidx.annotation.DrawableRes
-import android.app.PendingIntent
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.TaskStackBuilder
 import android.content.Context
 import android.graphics.Color
 import android.os.Build
 import androidx.core.app.NotificationCompat
-import com.geomoby.demoapp.logic.system.NotificationManager.NotificationID
+import com.geomoby.demoapp.domain.repositories.Notifications
 import java.util.concurrent.atomic.AtomicInteger
 
-object NotificationManager {
+object NotificationManager: Notifications {
     private const val NOTIFICATION_CHANNEL_ID = "GeoMobyNotificationChannelID"
     private const val NOTIFICATION_CHANNEL_NAME = "GM Notification Manager"
     private const val NOTIFICATION_IMPRTANCE = NotificationManager.IMPORTANCE_HIGH
 
-    @JvmStatic
-    fun sendNotification(
+    override fun sendNotification(
         context: Context,
         intent: Intent?,
         title: String?,

@@ -1,4 +1,4 @@
-package com.geomoby.demoapp.logic.location
+package com.geomoby.demoapp.data.location
 
 import android.Manifest
 import android.content.Context
@@ -6,18 +6,18 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.LocationRequest
 import androidx.core.app.ActivityCompat
-import com.geomoby.demoapp.GeoMobyApplication
 import android.content.pm.PackageManager
 import android.location.Location
 import com.google.android.gms.location.LocationServices
 import android.os.Looper
 import android.os.Bundle
 import android.util.Log
+import com.geomoby.demoapp.domain.repositories.LocationManager
+import com.geomoby.demoapp.domain.repositories.LocationManagerCallback
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.location.LocationResult
-import javax.inject.Singleton
 
-class LocationManager(val context: Context) : LocationCallback(),
+class LocationManagerGoogle(val context: Context) : LocationCallback(), LocationManager,
     GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private var mDelegate: LocationManagerCallback? = null
@@ -26,7 +26,7 @@ class LocationManager(val context: Context) : LocationCallback(),
      * Google API client
      */
     private val mGoogleApiClient = ThreadLocal<GoogleApiClient>()
-    fun setDelegate(delegate: LocationManagerCallback?) {
+    override fun setDelegate(delegate: LocationManagerCallback?) {
         mDelegate = delegate
     }
 
@@ -76,26 +76,12 @@ class LocationManager(val context: Context) : LocationCallback(),
         }
     }
 
-    interface LocationManagerCallback {
-        fun onLocationChanged(location: Location?)
-    }
-
     companion object {
         private const val UPDATE_INTERVAL_MILLISECONDS = (10 * 1000).toLong()
         private const val FASTEST_INTERVAL_MILLISECONDS = (2 * 1000).toLong()
-        /*private var mInstance: LocationManager? = null
-
-        @JvmStatic
-        fun getInstance(context: Context):LocationManager {
-                if (mInstance == null) {
-                    mInstance = LocationManager(context)
-                }
-                return mInstance!!
-            }*/
     }
 
     init {
-        //GeoMobyApplication.context?.let { context ->
             mGoogleApiClient.set(
                 GoogleApiClient.Builder(context)
                     .addApi(LocationServices.API)
@@ -104,6 +90,5 @@ class LocationManager(val context: Context) : LocationCallback(),
                     .build()
             )
             mGoogleApiClient.get()?.connect()
-        //}
     }
 }

@@ -80,7 +80,7 @@
             android:screenOrientation="portrait" />
 
         <!-- ****** START: Firebase Service ******* -->
-        <service android:name=".logic.firebase.FirebaseManager"
+        <service android:name="com.geomoby.demoapp.ui.firebase.FirebaseManager"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />

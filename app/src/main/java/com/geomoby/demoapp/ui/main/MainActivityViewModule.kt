@@ -1,7 +1,6 @@
 package com.geomoby.demoapp.ui.main
 
 import android.app.Application
-import android.content.Context
 import android.content.Intent
 import android.location.Location
 import android.os.Build
@@ -12,9 +11,10 @@ import com.geomoby.classes.GeomobyFenceView
 import com.geomoby.core.data.data_source.preference_storages.GeomobyDataStorage
 import com.geomoby.demoapp.GeoService
 import com.geomoby.demoapp.domain.usecases.map_mode.MapModeUseCases
-import com.geomoby.demoapp.logic.geomoby.GeoMobyManager
-import com.geomoby.demoapp.logic.location.LocationManager
-import com.google.android.gms.maps.CameraUpdateFactory
+import com.geomoby.demoapp.domain.repositories.GeoMobyManagerCallback
+import com.geomoby.demoapp.domain.repositories.LocationManagerCallback
+import com.geomoby.demoapp.domain.usecases.geomoby.GeoMobyUseCases
+import com.geomoby.demoapp.domain.usecases.location_manager.LocationManagerUseCases
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -27,12 +27,12 @@ import javax.inject.Inject
 @HiltViewModel
 class MainActivityViewModule @Inject constructor(
     val context: Application,
-    val mapModeUseCases: MapModeUseCases
+    private val mapModeUseCases: MapModeUseCases,
+    private val geoMobyUseCases: GeoMobyUseCases,
+    private val locationManagerUseCases: LocationManagerUseCases
 ):ViewModel(),
-    GeoMobyManager.GeoMobyManagerCallback,
-    LocationManager.LocationManagerCallback {
-
-    private var locationManager:LocationManager = LocationManager(context)
+    GeoMobyManagerCallback,
+    LocationManagerCallback {
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
@@ -61,11 +61,11 @@ class MainActivityViewModule @Inject constructor(
     }
 
     private fun startGeoMobyManager() {
-        GeoMobyManager.getInstance().setDelegate(this, GeomobyDataStorage(context))
+        geoMobyUseCases.setDelegate(this, GeomobyDataStorage(context))
     }
 
     private fun startLocationManager() {
-        locationManager.setDelegate(this)
+        locationManagerUseCases.setDelegate(this)
     }
 
     override fun onInitLocationChanged(location: Location?) {
@@ -80,7 +80,7 @@ class MainActivityViewModule @Inject constructor(
     override fun onDistanceChanged(distance: String?, inside: Boolean) {
         //TODO Move to SDK
         try {
-            val distanceFloat = distance!!.toFloat()
+            val distanceFloat = distance?.toFloatOrNull()?:0f
             Log.d("API", "distance changed ui - $distanceFloat")
             val result = Math.round(distanceFloat).toString() + "M"
             viewModelScope.launch {

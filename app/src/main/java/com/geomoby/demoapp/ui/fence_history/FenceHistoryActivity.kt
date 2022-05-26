@@ -2,18 +2,12 @@ package com.geomoby.demoapp.ui.fence_history
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Handler
-import android.os.Message
 import android.view.View
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.geomoby.demoapp.R
-import com.geomoby.demoapp.data.event_storage.EventStorageSP
-import com.geomoby.demoapp.data.event_logger.EventLoggerFile
 import com.geomoby.demoapp.databinding.ActivityFenceHistoryBinding
-import com.geomoby.demoapp.logic.system.NotificationManager
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
 
 @AndroidEntryPoint
 class FenceHistoryActivity : AppCompatActivity() {
